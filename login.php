@@ -21,7 +21,7 @@
             $query = "SELECT user_password, nome FROM tcontatto WHERE email = '$email'";
             $result = @mysqli_query($db_conn, $query);
 
-            if ($result && mysqli_num_rows($result) > 0) { //se result è tru e nrighe >0
+            if ($result && mysqli_num_rows($result) > 0) { //se result è true e nrighe > 0
                 $row = mysqli_fetch_assoc($result); //prendo la riga (email unique quindi solo 1 riga max)
                 if (password_verify($user_password, $row['user_password'])) { //confronto le 2 password (eseguo l'hash della pasword inserita e lo confronto con quello nel db)
                     echo "Login effettuato con successo!";
@@ -42,14 +42,21 @@
     ?>
         <div class="container">
             <h2>LOGIN</h2>
-            <form name="frmLogin" method="post" action="<?=$_SERVER['PHP_SELF']?>">
+            <form name="frmLogin" method="post" action="<?=$_SERVER['PHP_SELF']?>" onsubmit="setEmail()">
                 <div class="form-group">
                     <label for="txtEmail">Email:</label>
-                    <input type="email" class="form-control" id="txtEmail" name="txtEmail" required placeholder="Inserisci l'email">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="txtEmailPrefix" placeholder="nome.cognome" required>
+                        <span class="input-group-addon">@buonarroti.tn.it</span>
+                    </div>
+                    <input type="hidden" id="txtEmail" name="txtEmail">
                 </div>
                 <div class="form-group">
                     <label for="txtPassword">Password:</label>
                     <input type="password" class="form-control" id="txtPassword" name="txtPassword" required placeholder="Inserisci la password">
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()"> Mostra Password
                 </div>
                 <button type="submit" class="btn btn-primary" name="btnLogin">Login</button>
                 <button type="reset" class="btn btn-secondary" name="btnReset">Cancella</button>
@@ -62,4 +69,20 @@
 </body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+        function setEmail() {
+            var emailPrefix = document.getElementById('txtEmailPrefix').value;
+            var email = emailPrefix + '@buonarroti.tn.it';
+            document.getElementById('txtEmail').value = email;
+        }
+
+        function togglePasswordVisibility() {
+            var passwordField = document.getElementById('txtPassword');
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+    </script>
 </html>

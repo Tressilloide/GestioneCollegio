@@ -11,5 +11,5 @@ CREATE TABLE tcontatto (
     email                       VARCHAR(50)         NOT NULL   UNIQUE,
     user_password                   VARCHAR(255)         NOT NULL, -- sarebbe 60 ma per scalabilità uso 255
     PRIMARY KEY(id_contatto),
-    INDEX icontatto (nome, cognome)
+    INDEX icontatt (nome, cognome)
 ) ENGINE = InnoDB;

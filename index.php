@@ -62,13 +62,17 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">ADMIN</p>
+                    <a target="_blank"href="admin.php" class="btn btn-primary">Scopri di più</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <br>
-    
-   
+    <br>   
 </div>
-
-
     </body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
