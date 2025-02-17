@@ -9,9 +9,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Login</h1>
     <?php
         if (isset($_POST['btnLogin'])) {
             $email = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));
@@ -39,32 +40,26 @@
             }
         } else {
     ?>
+        <div class="container">
+            <h2>LOGIN</h2>
             <form name="frmLogin" method="post" action="<?=$_SERVER['PHP_SELF']?>">
-                <table>
-                    <tr>
-                        <td>Email</td>
-                        <td>
-                            <input type="email" name="txtEmail" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Password</td>
-                        <td>
-                            <input type="password" name="txtPassword" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" align="center">
-                            <input type="submit" name="btnLogin" value="Login">
-                            <input type="reset" name="btnReset" value="Cancella">
-                        </td>
-                    </tr>
-                </table>
+                <div class="form-group">
+                    <label for="txtEmail">Email:</label>
+                    <input type="email" class="form-control" id="txtEmail" name="txtEmail" required placeholder="Inserisci l'email">
+                </div>
+                <div class="form-group">
+                    <label for="txtPassword">Password:</label>
+                    <input type="password" class="form-control" id="txtPassword" name="txtPassword" required placeholder="Inserisci la password">
+                </div>
+                <button type="submit" class="btn btn-primary" name="btnLogin">Login</button>
+                <button type="reset" class="btn btn-secondary" name="btnReset">Cancella</button>
+                <a href="index.php" class="btn btn-primary">Torna indietro</a>
             </form>
-            <br>
-            <a href="index.php">Torna indietro</a>
+        </div>
     <?php
         }
     ?>
 </body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </html>

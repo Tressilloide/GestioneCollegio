@@ -7,6 +7,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Area Riservata</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('lock.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 20%; /* Rimpicciolisce l'immagine al 50% della sua dimensione originale */
+
+            height: 100vh; 
+        }
+    </style>
 </head>
 <body>
     <?php
@@ -19,10 +32,12 @@
 
         if (isset($_SESSION['if_loggato']) && $_SESSION['if_loggato'] === true) {
     ?>
-        <h1>Benvenuto, <?php echo htmlspecialchars($_SESSION['nome_utente']); ?>!</h1>
-        <form name="frmLogout" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <button type="submit" name="logout">Logout</button>
-        </form>
+        <div class="container">
+            <h2>Benvenuto, <?php echo htmlspecialchars($_SESSION['nome_utente']); ?>!</h2>
+            <form name="frmLogout" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <button type="submit" class="btn btn-danger" name="logout">Logout</button>
+            </form>
+        </div>
     <?php
         } else {
     ?>

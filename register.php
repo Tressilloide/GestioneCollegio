@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html lang="it">
     <head>
-        <title>Contatto inserimento</title>
+        <title>Inserimento contatto</title>
         <meta charset="UTF-8">
          <style>
             table {
@@ -16,6 +16,8 @@
                 border: 1px solid;
             }
         </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     </head>
     <body>
         <?php
@@ -55,56 +57,39 @@
                     echo $message;
                 } else {
         ?>
-                    <form name="frmContattiInserimento" method="post" action="<?=$_SERVER['PHP_SELF']?>">
-                        <table>
-                            <tr>
-                                <td>Nome</td>
-                                <td>
-                                    <input type="text" name="txtNome">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Cognome</td>
-                                <td>
-                                    <input type="text" name="txtCognome">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Codice Fiscale</td>
-                                <td>
-                                    <input type="text" name="txtCodiceFiscale">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Data di nascita</td>
-                                <td>
-                                    <input type="date" name="txtDataNascita">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Email</td>
-                                <td>
-                                    <input type="email" name="txtEmail">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Password</td>
-                                <td>
-                                    <input type="password" name="txtPassword">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" align="center">
-                                    <input type="submit" name="btnInserisci" value="Inserisci">
-                                    <input type="reset"  name="btnReset" value="Cancella">
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                    <br>
-                    <input type="button" value="Torna indietro" onClick="javascript:history.back()">
-                    <button onClick="javascript:history.back()">Torna indietro</button>
-                    <a href="index.php">Torna indietro</a>
+            <div class="container">
+                <h2>REGISTRATI</h2>
+                <form name="frmContattiInserimento" method="post" action="<?=$_SERVER['PHP_SELF']?>">
+                    <div class="form-group">
+                        <label for="txtNome">Nome:</label>
+                        <input type="text" class="form-control" id="txtNome" name="txtNome" placeholder="Inserisci il nome" required >
+                    </div>
+                    <div class="form-group">
+                        <label for="txtCognome">Cognome:</label>
+                        <input type="text" class="form-control" id="txtCognome" name="txtCognome" placeholder="Inserisci il cognome"required >
+                    </div>
+                    <div class="form-group">
+                        <label for="txtCodiceFiscale">Codice Fiscale:</label>
+                        <input type="text" class="form-control" id="txtCodiceFiscale" name="txtCodiceFiscale" placeholder="Inserisci il codice fiscale"required >
+                    </div>
+                    <div class="form-group">
+                        <label for="txtDataNascita">Data di Nascita:</label>
+                        <input type="date" class="form-control" id="txtDataNascita" name="txtDataNascita"required >
+                    </div>
+                    <div class="form-group">
+                        <label for="txtEmail">Email:</label>
+                        <input type="email" class="form-control" id="txtEmail" name="txtEmail" placeholder="Inserisci l'email"required >
+                    </div>
+                    <div class="form-group">
+                        <label for="txtPassword">Password:</label>
+                        <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Inserisci la password"required >
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="btnInserisci">Registrati</button>
+                    <button type="reset" class="btn btn-secondary" name="btnReset">Cancella</button>
+                    <a href="index.php" class="btn btn-primary">Torna indietro</a>
+
+                </form>
+            </div>
         <?php
                 }
             } else {
@@ -114,4 +99,6 @@
             }
         ?>
     </body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </html>
