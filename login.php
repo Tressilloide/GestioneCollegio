@@ -18,7 +18,7 @@
             $email = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));
             $user_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
 
-            $query = "SELECT user_password, nome FROM tcontatti WHERE email = '$email'";
+            $query = "SELECT user_password, nome FROM tcontatto WHERE email = '$email'";
             $result = @mysqli_query($db_conn, $query);
 
             if ($result && mysqli_num_rows($result) > 0) { //se result è tru e nrighe >0

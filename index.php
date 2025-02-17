@@ -55,8 +55,7 @@
         </div>
         <div class="col-md-4">
             <div class="card">
-                <img src="images/ard
-                uino.jpg" class="card-img-top" alt="Immagine 3">
+                <img src="images/arduino.jpg" class="card-img-top" alt="Immagine 3">
                 <div class="card-body">
                     <p class="card-text">ARDUINO</p>
                     <a target="_blank"href="https://www.arduino.cc/" class="btn btn-primary">Scopri di più</a>

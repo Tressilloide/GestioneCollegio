@@ -25,9 +25,7 @@
                 if (isset($_POST['btnInserisci'])) {
                     $nome           = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtNome']))));
                     $cognome        = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtCognome']))));
-                    $codice_fiscale = @mysqli_real_escape_string($db_conn, strtoupper(filtro_testo($_POST['txtCodiceFiscale'])));
                     $email    = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));  
-                    $data_nascita   = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtDataNascita'])); //date("Y-n-j") data attuale; date("2024-01-07") determinata data;
                     $user_password   = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
                     $password_hash = password_hash($user_password, PASSWORD_DEFAULT);
                     //I browser moderni invertono la data automaticamente usando type="date"
@@ -35,8 +33,8 @@
                     //$timestamp      = strtotime($data_nascita);
                     //$data_nascita   = date("Y-m-d", $timestamp);
 
-                    $query_insert = "INSERT INTO tcontatti (nome, cognome, codice_fiscale, email, data_nascita, user_password) "
-                                  . "VALUES('$nome', '$cognome', '$codice_fiscale', '$email', '$data_nascita', '$password_hash')";
+                    $query_insert = "INSERT INTO tcontatto (nome, cognome, email, user_password) "
+                                  . "VALUES('$nome', '$cognome', '$email', '$password_hash')";
 
                     try {
                         $insert = @mysqli_query($db_conn, $query_insert);
@@ -67,14 +65,6 @@
                     <div class="form-group">
                         <label for="txtCognome">Cognome:</label>
                         <input type="text" class="form-control" id="txtCognome" name="txtCognome" placeholder="Inserisci il cognome"required >
-                    </div>
-                    <div class="form-group">
-                        <label for="txtCodiceFiscale">Codice Fiscale:</label>
-                        <input type="text" class="form-control" id="txtCodiceFiscale" name="txtCodiceFiscale" placeholder="Inserisci il codice fiscale"required >
-                    </div>
-                    <div class="form-group">
-                        <label for="txtDataNascita">Data di Nascita:</label>
-                        <input type="date" class="form-control" id="txtDataNascita" name="txtDataNascita"required >
                     </div>
                     <div class="form-group">
                         <label for="txtEmail">Email:</label>
