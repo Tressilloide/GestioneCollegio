@@ -95,7 +95,7 @@
             } else {
                 echo $error_message;
 
-                header("refresh:3; index.php");
+                header("refresh:2; index.php");
             }
         ?>
     </body>

@@ -37,7 +37,7 @@
     <div class="row mt-4">
         <div class="col-md-4">
             <div class="card">
-                <img src="nao.jpg" class="card-img-top" alt="Immagine 1">
+                <img src="images/nao.jpg" class="card-img-top" alt="Immagine 1">
                 <div class="card-body">
                     <p class="card-text">NAO</p>
                     <a target="_blank"href="https://www.naochallenge.it/" class="btn btn-primary">Scopri di più</a>
@@ -46,7 +46,7 @@
         </div>
         <div class="col-md-4">
             <div class="card">
-                <img src="itt.png" class="card-img-top" alt="Immagine 2">
+                <img src="images/itt.png" class="card-img-top" alt="Immagine 2">
                 <div class="card-body">
                     <p class="card-text">ITT BUONARROTI</p>
                     <a target="_blank"href="https://www.buonarroti.tn.it/" class="btn btn-primary">Scopri di più</a>
@@ -55,7 +55,8 @@
         </div>
         <div class="col-md-4">
             <div class="card">
-                <img src="arduino.jpg" class="card-img-top" alt="Immagine 3">
+                <img src="images/ard
+                uino.jpg" class="card-img-top" alt="Immagine 3">
                 <div class="card-body">
                     <p class="card-text">ARDUINO</p>
                     <a target="_blank"href="https://www.arduino.cc/" class="btn btn-primary">Scopri di più</a>

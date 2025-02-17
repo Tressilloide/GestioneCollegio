@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
         body {
-            background-image: url('lock.jpg');
+            background-image: url('images/lock.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -43,7 +43,7 @@
     ?>
         <h1>Non puoi stare su questa pagina senza essere registrato.</h1>
     <?php
-            header("refresh:3; login.php");
+            header("refresh:2; login.php");
             exit();//se non metto exit() esplode tutto (entra lostesso nell'else), non so pk
         }
     ?>
