@@ -21,14 +21,14 @@ CREATE TABLE tcollegiodocenti(
     ora_fine                    TIME                NOT NULL,
     descrizione                 VARCHAR(255)        NOT NULL,
     PRIMARY KEY(id_collegio)
-)
+) ENGINE = InnoDB;
 
 CREATE TABLE tproposta(
     id_proposta                 BIGINT              NOT NULL    AUTO_INCREMENT,
     descrizione                 VARCHAR(255)        NOT NULL,
     titolo                      VARCHAR(50)         NOT NULL,
     PRIMARY KEY(id_proposta)
-)
+) ENGINE = InnoDB;
 
 CREATE TABLE tvotazione(
     id_votazione                BIGINT              NOT NULL    AUTO_INCREMENT,
@@ -40,7 +40,7 @@ CREATE TABLE tvotazione(
     PRIMARY KEY(id_votazione),
     FOREIGN KEY(id_contatto) REFERENCES tdocente(id_contatto),
     FOREIGN KEY(id_proposta) REFERENCES tproposta(id_proposta)
-)
+) ENGINE = InnoDB;
 
 CREATE TABLE partecipa(
     id_collegio                 BIGINT              NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE partecipa(
     PRIMARY KEY(id_collegio, id_docente),
     FOREIGN KEY(id_collegio) REFERENCES tcollegiodocenti(id_collegio),
     FOREIGN KEY(id_docente) REFERENCES tdocente(id_contatto)
-)
+) ENGINE = InnoDB;
 
 CREATE TABLE effettua(
     id_docente                  BIGINT              NOT NULL,
@@ -60,4 +60,4 @@ CREATE TABLE effettua(
     PRIMARY KEY(id_docente, id_votazione),
     FOREIGN KEY(id_docente) REFERENCES tdocente(id_contatto),
     FOREIGN KEY(id_votazione) REFERENCES tvotazione(id_votazione)
-)
+) ENGINE = InnoDB;
