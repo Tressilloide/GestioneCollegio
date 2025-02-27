@@ -1,104 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-  <title>Sito Collegio Docenti</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Immagini Divise con Testo</title>
+    <style>
+        .title {
+            background-color: #344ceb;
+            height: 13vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         h1 {
-            font-weight: bold;
-            letter-spacing: 1px;
-            line-height: 1.2;
-            font-family: 'Arial', sans-serif;
-        }
-
-        h2 {
             color: white;
-            font-weight: bold;
-            letter-spacing: 1px;
-            line-height: 1.2;
-            font-family: 'Arial', sans-serif;
         }
-        body {
-            background-color: #e6fdff;
-            color: rgba (0, 0, 0, 1);
-            font-family: Arial, sans-serif;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            display: flex;
-            justify-content: center;  
-            align-items: flex-start;  
-            height: 100vh;            
             padding: 0;
-            flex-direction: column;   
         }
 
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
+        body {
+            font-family: Arial, sans-serif;
         }
 
-
-        .center-container {
+        .container {
             display: flex;
-            justify-content: space-evenly;
-            margin-top: 80px;  
-            margin-left: 2.5%;
-            margin-right: 2.5%;
-            width: 95%;
-            padding: 20px;
+            height: 87vh;
+            overflow: hidden;
         }
 
-
-        .center-box {
-            width: 100%;
-            background: #0062ff;
-            padding: 30px;
-            text-align: center;
-            border-radius: 10px;
+        .image-box {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s; 
+            display: block;
+            position: relative;
+            color: white;
+            text-decoration: none;
         }
 
-        .clickable-link {
-            text-decoration: none; /* Rimuove la sottolineatura */
+        .image-box:hover {
+            transform: scale(1.05);
         }
 
-
+        .image-text {
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px; 
+            border-radius: 20px;
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0, 0, 255, 0.3); 
+            color: #344ceb;
+            font-weight: bold;
+            text-decoration-line: underline;
+        }
     </style>
 </head>
 <body>
-  
-    <div class="container text-center">
-    <h1>Benvenuto alla home page del Collegio Docenti</h1>
-    <br>
-    
-    <a href="#" class="clickable-link">
-        <div class="center-container">
-            <div class="center-box">
-                <h2>Home</h2>
-            </div>
-        </div>
-    </a>
-    <a href="login.php" class="clickable-link">
-        <div class="center-container">
-            <div class="center-box">
-                <h2>Login</h2>
-            </div>
-        </div>
-    </a>
-    <a href="register.php" class="clickable-link">
-        <div class="center-container">
-            <div class="center-box">
-                <h2>Registrati</h2>
-            </div>
-        </div>
-    </a>
-
-    </body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <div class="title">
+        <h1>Home Collegio Docenti</h1>
+    </div>
+    <div class="container">
+        <a href="login.php" class="image-box" style="background-image: url('images/access.jpg');">
+            <span class="image-text">Login</span>
+        </a>
+        <a href="register.php" class="image-box" style="background-image: url('images/register.jpg');">
+            <span class="image-text">Registrati</span>
+        </a>
+        <a href="https://www.buonarroti.tn.it/" class="image-box" style="background-image: url('images/Buonarroti_Icona.jpg');">
+            <span class="image-text">Buonarroti</span>
+        </a>
+    </div>
+</body>
 </html>
