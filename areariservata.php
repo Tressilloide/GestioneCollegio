@@ -1,4 +1,6 @@
 <?php
+    include 'connessione.php';
+    include 'funzioni.php';
     session_start();
 ?>
 
@@ -57,6 +59,9 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
 
+        .list-group-item{
+            color: black;
+        }
 
 
 
@@ -71,8 +76,19 @@
             exit();
         }
 
-
+        $email = $_SESSION['email_utente'];
         if (isset($_SESSION['if_loggato']) && $_SESSION['if_loggato'] === true) {
+
+            $email = mysqli_real_escape_string($db_conn, $email);
+
+            $query = "SELECT effettua.voto, tvotazione.descrizione
+                FROM effettua
+                JOIN tdocente ON effettua.id_docente = tdocente.id_contatto
+                JOIN tvotazione ON effettua.id_votazione = tvotazione.id_votazione
+                WHERE tdocente.email = '$email'
+            ";
+            $result = mysqli_query($db_conn, $query);
+
     ?>
     <!-- Navbar fissa in cima -->
     <nav class="navbar navbar-default">
@@ -118,7 +134,26 @@
         <!-- Div destro -->
         <div class="center-box">
             <h2>Storico Votazioni</h2>
+            <ul class='list-group'>
+                <?php
+                    if ($result && mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                ?>
+                    <li class='list-group-item'>
+                        Votazione: <?= htmlspecialchars($row['descrizione']) ?> - Voto: <?= htmlspecialchars($row['voto']) ?>
+                    </li>
+                <?php
+                        }
+                    } else {
+                ?>
+                    <li class='list-group-item'>Nessun voto effettuato</li>
+                <?php
+                    }
+                ?>
+            </ul>
         </div>
+
+
     </div>
 
 
