@@ -85,7 +85,7 @@
                     } else {
                         $password_hash = password_hash($user_password, PASSWORD_DEFAULT);
 
-                        $query_insert = "INSERT INTO tcontatto (nome, cognome, email, user_password) "
+                        $query_insert = "INSERT INTO tdocente (nome, cognome, email, user_password) "
                                       . "VALUES('$nome', '$cognome', '$email', '$password_hash')";
 
                         try {
