@@ -12,6 +12,32 @@
         header("refresh:2; index.php");
         exit();
     }
+
+    include 'connessione.php';
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_POST['crea_collegio'])) {
+            $data_collegio = mysqli_real_escape_string($db_conn, $_POST['data_collegio']);
+            $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
+            $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
+            $descrizione = mysqli_real_escape_string($db_conn, $_POST['descrizione']);
+
+            $query_collegio = "INSERT INTO tcollegiodocenti (data_collegio, ora_inizio, ora_fine, descrizione) 
+                               VALUES ('$data_collegio', '$ora_inizio', '$ora_fine', '$descrizione')";
+
+            if (mysqli_query($db_conn, $query_collegio)) {
+                echo "<h2>Collegio creato con successo!</h2>";
+            } else {
+                echo "<h2>Errore nella creazione del collegio: " . mysqli_error($db_conn) . "</h2>";
+            }
+            // Redirect per evitare duplicati
+            header("Location: admin.php");
+            exit();
+        }
+    }
+
+    // Recupera i collegi esistenti per il menu a tendina
+    $collegi_result = mysqli_query($db_conn, "SELECT id_collegio, descrizione FROM tcollegiodocenti");
 ?>
 
 <!DOCTYPE html>
@@ -36,9 +62,47 @@
     <h1>Benvenuto nella pagina riservata agli admin</h1>
 
     <div class="container">
-        <h2>Gestione Proposte e Votazioni</h2>
+        <h2>Gestione Proposte, Votazioni e Collegi</h2>
         <a href="crea_proposta.php" class="btn btn-primary">Crea Proposta</a>
-        <a href="crea_votazione.php" class="btn btn-primary">Crea Votazione</a>
+        <h2>Crea un nuovo collegio</h2>
+        <form method="post" action="">
+            <div class="form-group">
+                <label for="data_collegio">Data Collegio:</label>
+                <input type="date" class="form-control" id="data_collegio" name="data_collegio" required>
+            </div>
+            <div class="form-group">
+                <label for="ora_inizio">Ora Inizio:</label>
+                <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" required>
+            </div>
+            <div class="form-group">
+                <label for="ora_fine">Ora Fine:</label>
+                <input type="time" class="form-control" id="ora_fine" name="ora_fine" required>
+            </div>
+            <div class="form-group">
+                <label for="descrizione">Descrizione:</label>
+                <input type="text" class="form-control" id="descrizione" name="descrizione" required>
+            </div>
+            <button type="submit" class="btn btn-primary" name="crea_collegio">Crea Collegio</button>
+        </form>
+
+        <h2>Seleziona un collegio esistente</h2>
+        <form method="get" action="crea_votazione.php">
+            <div class="form-group">
+                <label for="id_collegio">Collegio:</label>
+                <select class="form-control" id="id_collegio" name="id_collegio" required>
+                    <?php
+                        if ($collegi_result && mysqli_num_rows($collegi_result) > 0) {
+                            while ($row = mysqli_fetch_assoc($collegi_result)) {
+                                echo "<option value='" . $row['id_collegio'] . "'>" . htmlspecialchars($row['descrizione']) . "</option>";
+                            }
+                        } else {
+                            echo "<option value=''>Nessun collegio disponibile</option>";
+                        }
+                    ?>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Seleziona Collegio</button>
+        </form>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

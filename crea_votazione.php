@@ -20,10 +20,10 @@
         $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
         $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
         $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
-        $id_contatto = mysqli_real_escape_string($db_conn, $_POST['id_contatto']);
+        $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
 
-        $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_contatto) 
-                            VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta', '$id_contatto')";
+        $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio) 
+                            VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta', '$id_collegio')";
 
         if (mysqli_query($db_conn, $query_votazione)) {
             echo "<h2>Votazione creata con successo!</h2>";
@@ -37,6 +37,19 @@
 
     // Recupera le proposte esistenti per il menu a tendina
     $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tproposta");
+
+    // Recupera l'ID del collegio dalla URL
+    $id_collegio = isset($_GET['id_collegio']) ? $_GET['id_collegio'] : '';
+
+    // Recupera il titolo del collegio dal database
+    $collegio_titolo = '';
+    if ($id_collegio) {
+        $collegio_result = mysqli_query($db_conn, "SELECT descrizione FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'");
+        if ($collegio_result && mysqli_num_rows($collegio_result) > 0) {
+            $collegio_row = mysqli_fetch_assoc($collegio_result);
+            $collegio_titolo = $collegio_row['descrizione'];
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -89,8 +102,9 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="id_contatto">ID Contatto:</label>
-                <input type="number" class="form-control" id="id_contatto" name="id_contatto" required>
+                <label for="collegio_titolo">Collegio:</label>
+                <input type="text" class="form-control" id="collegio_titolo" name="collegio_titolo" value="<?php echo htmlspecialchars($collegio_titolo); ?>" readonly>
+                <input type="hidden" name="id_collegio" value="<?php echo htmlspecialchars($id_collegio); ?>">
             </div>
             <button type="submit" class="btn btn-primary" name="crea_votazione">Crea Votazione</button>
         </form>
