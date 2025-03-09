@@ -37,6 +37,7 @@ CREATE TABLE tvotazione(
     ora_fine                    TIME                NOT NULL,
     id_proposta                 BIGINT              NOT NULL,
     id_collegio                 BIGINT              NOT NULL,
+    otp                         INT                 NOT NULL,
     PRIMARY KEY(id_votazione),
     FOREIGN KEY(id_collegio) REFERENCES tcollegiodocenti(id_collegio),
     FOREIGN KEY(id_proposta) REFERENCES tproposta(id_proposta)

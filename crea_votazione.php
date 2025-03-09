@@ -22,17 +22,20 @@
         $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
         $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
 
-        $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio) 
-                            VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta', '$id_collegio')";
+        // Genera un OTP di 3 cifre
+        $otp = rand(100, 999);
+
+        $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio, otp) 
+                            VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta', '$id_collegio', '$otp')";
 
         if (mysqli_query($db_conn, $query_votazione)) {
-            echo "<h2>Votazione creata con successo!</h2>";
+            $id_votazione = mysqli_insert_id($db_conn);
+            // Redirect to visualizza_otp.php with the OTP and ID votazione
+            header("Location: visualizza_otp.php?otp=$otp&id_votazione=$id_votazione");
+            exit();
         } else {
             echo "<h2>Errore nella creazione della votazione: " . mysqli_error($db_conn) . "</h2>";
         }
-        // Redirect per evitare duplicati
-        header("Location: crea_votazione.php");
-        exit();
     }
 
     // Recupera le proposte esistenti per il menu a tendina
