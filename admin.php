@@ -12,54 +12,6 @@
         header("refresh:2; index.php");
         exit();
     }
-
-    include 'connessione.php';
-
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if (isset($_POST['crea_proposta'])) {
-            $titolo = mysqli_real_escape_string($db_conn, $_POST['titolo']);
-            $descrizione_proposta = mysqli_real_escape_string($db_conn, $_POST['descrizione_proposta']);
-
-            // Controlla se la proposta esiste già
-            $query_check = "SELECT * FROM tproposta WHERE titolo = '$titolo' AND descrizione = '$descrizione_proposta'";
-            $result_check = mysqli_query($db_conn, $query_check);
-
-            if (mysqli_num_rows($result_check) > 0) {
-                echo "<h2>Proposta già esistente!</h2>";
-            } else {
-                $query_proposta = "INSERT INTO tproposta (titolo, descrizione) VALUES ('$titolo', '$descrizione_proposta')";
-
-                if (mysqli_query($db_conn, $query_proposta)) {
-                    echo "<h2>Proposta creata con successo!</h2>";
-                } else {
-                    echo "<h2>Errore nella creazione della proposta: " . mysqli_error($db_conn) . "</h2>";
-                }
-            }
-            // Redirect per evitare duplicati
-            header("Location: admin.php");
-            exit();
-        } elseif (isset($_POST['crea_votazione'])) {
-            $descrizione_votazione = mysqli_real_escape_string($db_conn, $_POST['descrizione_votazione']);
-            $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
-            $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
-            $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
-
-            $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta) 
-                                VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta')";
-
-            if (mysqli_query($db_conn, $query_votazione)) {
-                echo "<h2>Votazione creata con successo!</h2>";
-            } else {
-                echo "<h2>Errore nella creazione della votazione: " . mysqli_error($db_conn) . "</h2>";
-            }
-            // Redirect per evitare duplicati
-            header("Location: admin.php");
-            exit();
-        }
-    }
-
-    // Recupera le proposte esistenti per il menu a tendina
-    $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tproposta");
 ?>
 
 <!DOCTYPE html>
@@ -84,50 +36,9 @@
     <h1>Benvenuto nella pagina riservata agli admin</h1>
 
     <div class="container">
-        <h2>Crea una nuova proposta</h2>
-        <form method="post" action="">
-            <div class="form-group">
-                <label for="titolo">Titolo:</label>
-                <input type="text" class="form-control" id="titolo" name="titolo" required>
-            </div>
-            <div class="form-group">
-                <label for="descrizione_proposta">Descrizione:</label>
-                <input type="text" class="form-control" id="descrizione_proposta" name="descrizione_proposta" required>
-            </div>
-            <button type="submit" class="btn btn-primary" name="crea_proposta">Crea Proposta</button>
-        </form>
-
-        <h2>Crea una nuova votazione</h2>
-        <form method="post" action="">
-            <div class="form-group">
-                <label for="descrizione_votazione">Descrizione:</label>
-                <input type="text" class="form-control" id="descrizione_votazione" name="descrizione_votazione" required>
-            </div>
-            <div class="form-group">
-                <label for="ora_inizio">Ora Inizio:</label>
-                <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" required>
-            </div>
-            <div class="form-group">
-                <label for="ora_fine">Ora Fine:</label>
-                <input type="time" class="form-control" id="ora_fine" name="ora_fine" required>
-            </div>
-            <div class="form-group">
-                <label for="id_proposta">Proposta:</label>
-                <select class="form-control" id="id_proposta" name="id_proposta" required>
-                    <?php
-                        if ($proposte_result && mysqli_num_rows($proposte_result) > 0) {
-                            while ($row = mysqli_fetch_assoc($proposte_result)) {
-                                echo "<option value='" . $row['id_proposta'] . "'>" . htmlspecialchars($row['titolo']) . "</option>";
-                            }
-                        } else {
-                            echo "<option value=''>Nessuna proposta disponibile</option>";
-                        }
-                    ?>
-                </select>
-            </div>
-        
-            <button type="submit" class="btn btn-primary" name="crea_votazione">Crea Votazione</button>
-        </form>
+        <h2>Gestione Proposte e Votazioni</h2>
+        <a href="crea_proposta.php" class="btn btn-primary">Crea Proposta</a>
+        <a href="crea_votazione.php" class="btn btn-primary">Crea Votazione</a>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
