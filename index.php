@@ -1,79 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-  <title>Sito Cristelli</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Immagini Divise con Testo</title>
+    <style>
+        .title {
+            background-color: #344ceb;
+            height: 13vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            color: white;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            height: 87vh;
+            overflow: hidden;
+        }
+
+        .image-box {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s; 
+            display: block;
+            position: relative;
+            color: white;
+            text-decoration: none;
+        }
+
+        .image-box:hover {
+            transform: scale(1.05);
+        }
+
+        .image-text {
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px; 
+            border-radius: 20px;
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0, 0, 255, 0.3); 
+            color: #344ceb;
+            font-weight: bold;
+            text-decoration-line: underline;
+        }
+    </style>
 </head>
 <body>
-
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">Sito Cristelli</a>
-            </div>
-            <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="login.php">Login</a></li>
-                    <li><a href="register.php">Registrati</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-  
-    <div class="container text-center">
-    <h2>Benvenuto</h2>
-    <h3>Home page Cristelli</h3>
-    <br>
-    
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="card">
-                <img src="images/nao.jpg" class="card-img-top" alt="Immagine 1">
-                <div class="card-body">
-                    <p class="card-text">NAO</p>
-                    <a target="_blank"href="https://www.naochallenge.it/" class="btn btn-primary">Scopri di più</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <img src="images/itt.png" class="card-img-top" alt="Immagine 2">
-                <div class="card-body">
-                    <p class="card-text">ITT BUONARROTI</p>
-                    <a target="_blank"href="https://www.buonarroti.tn.it/" class="btn btn-primary">Scopri di più</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <img src="images/arduino.jpg" class="card-img-top" alt="Immagine 3">
-                <div class="card-body">
-                    <p class="card-text">ARDUINO</p>
-                    <a target="_blank"href="https://www.arduino.cc/" class="btn btn-primary">Scopri di più</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-text">ADMIN</p>
-                    <a target="_blank"href="admin.php" class="btn btn-primary">Scopri di più</a>
-                </div>
-            </div>
-        </div>
+    <div class="title">
+        <h1>Home Collegio Docenti</h1>
     </div>
-    <br>   
-</div>
-    </body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <div class="container">
+        <a href="login.php" class="image-box" style="background-image: url('images/access.jpg');">
+            <span class="image-text">Login</span>
+        </a>
+        <a href="register.php" class="image-box" style="background-image: url('images/register.jpg');">
+            <span class="image-text">Registrati</span>
+        </a>
+        <a href="https://www.buonarroti.tn.it/" class="image-box" style="background-image: url('images/Buonarroti_Icona.jpg');">
+            <span class="image-text">Buonarroti</span>
+        </a>
+    </div>
+</body>
 </html>

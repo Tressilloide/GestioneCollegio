@@ -11,6 +11,64 @@
     <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('images/register.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid;
+        }
+        .input-group .form-control,
+        .input-group .input-group-addon {
+            width: 50%;
+        }
+        .image-text {
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px; 
+            border-radius: 20px;
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0, 0, 255, 0.3); 
+            color: #344ceb;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 0.67em;
+            color: black;
+        }
+        button[name="btnLogin"] {
+            background-color: #344ceb;
+            color: white;
+        }
+        button[name="btnLogin"]:hover {
+            background-color: #2a3b9d;
+        }
+        button[name="btnReset"] {
+            background-color: #344ceb;
+            color: white;
+        }
+        button[name="btnReset"]:hover {
+            background-color: #2a3b9d;
+        }
+        a[name="btnBack"] {
+            background-color: #344ceb;
+            color: white;
+        }
+        a[name="btnBack"]:hover {
+            background-color: #2a3b9d;
+        }
+    </style>
 </head>
 <body>
     <?php
@@ -18,7 +76,7 @@
             $email = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));
             $user_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
 
-            $query = "SELECT user_password, nome FROM tcontatto WHERE email = '$email'";
+            $query = "SELECT user_password, nome FROM tdocente WHERE email = '$email'";
             $result = @mysqli_query($db_conn, $query);
 
             if ($result && mysqli_num_rows($result) > 0) { //se result è true e nrighe > 0
