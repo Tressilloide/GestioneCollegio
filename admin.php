@@ -43,10 +43,9 @@
             $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
             $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
             $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
-            $id_contatto = mysqli_real_escape_string($db_conn, $_POST['id_contatto']);
 
-            $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_contatto) 
-                                VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta', '$id_contatto')";
+            $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta) 
+                                VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta')";
 
             if (mysqli_query($db_conn, $query_votazione)) {
                 echo "<h2>Votazione creata con successo!</h2>";
@@ -126,10 +125,7 @@
                     ?>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="id_contatto">ID Contatto:</label>
-                <input type="number" class="form-control" id="id_contatto" name="id_contatto" required>
-            </div>
+        
             <button type="submit" class="btn btn-primary" name="crea_votazione">Crea Votazione</button>
         </form>
     </div>

@@ -5,12 +5,12 @@ CREATE DATABASE my_collegio DEFAULT CHARACTER SET = utf8;
 USE my_collegio;
 
 CREATE TABLE tdocente (
-    id_contatto                 BIGINT              NOT NULL    AUTO_INCREMENT,
+    id_docente                 BIGINT              NOT NULL    AUTO_INCREMENT,
     nome                        VARCHAR(20)         NOT NULL,
     cognome                     VARCHAR(20)         NOT NULL,
     email                       VARCHAR(50)         NOT NULL   UNIQUE,
     user_password               VARCHAR(255)         NOT NULL, -- sarebbe 60 ma per scalabilità uso 255
-    PRIMARY KEY(id_contatto),
+    PRIMARY KEY(id_docente),
     INDEX idocente (nome, cognome)
 ) ENGINE = InnoDB;
 
@@ -36,9 +36,7 @@ CREATE TABLE tvotazione(
     ora_inizio                  TIME                NOT NULL,
     ora_fine                    TIME                NOT NULL,
     id_proposta                 BIGINT              NOT NULL,
-    id_contatto                 BIGINT              NOT NULL,
     PRIMARY KEY(id_votazione),
-    FOREIGN KEY(id_contatto) REFERENCES tdocente(id_contatto),
     FOREIGN KEY(id_proposta) REFERENCES tproposta(id_proposta)
 ) ENGINE = InnoDB;
 
@@ -49,7 +47,7 @@ CREATE TABLE partecipa(
     ora_uscita                  TIME                NOT NULL,
     PRIMARY KEY(id_collegio, id_docente),
     FOREIGN KEY(id_collegio) REFERENCES tcollegiodocenti(id_collegio),
-    FOREIGN KEY(id_docente) REFERENCES tdocente(id_contatto)
+    FOREIGN KEY(id_docente) REFERENCES tdocente(id_docente)
 ) ENGINE = InnoDB;
 
 CREATE TABLE effettua(
@@ -58,6 +56,6 @@ CREATE TABLE effettua(
     voto                        INT                 NOT NULL,
     ora                         TIME                NOT NULL,
     PRIMARY KEY(id_docente, id_votazione),
-    FOREIGN KEY(id_docente) REFERENCES tdocente(id_contatto),
+    FOREIGN KEY(id_docente) REFERENCES tdocente(id_docente),
     FOREIGN KEY(id_votazione) REFERENCES tvotazione(id_votazione)
 ) ENGINE = InnoDB;
