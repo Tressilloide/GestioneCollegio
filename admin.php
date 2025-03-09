@@ -1,5 +1,17 @@
 <?php
     session_start();
+
+    if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
+        ?> <h1>Non sei loggato, corri a loggarti.</h1> <?php
+        header("refresh:2; index.php");
+        exit();
+    }
+
+    if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+        ?> <h1>Non sei autorizzato ad accedere a questa pagina.</h1> <?php
+        header("refresh:2; index.php");
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>

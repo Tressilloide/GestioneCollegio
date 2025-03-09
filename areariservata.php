@@ -79,6 +79,11 @@
         $email = $_SESSION['email_utente'];
         if (isset($_SESSION['if_loggato']) && $_SESSION['if_loggato'] === true) {
 
+            if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true) {
+                header("Location: admin.php");
+                exit();
+            }
+
             $email = mysqli_real_escape_string($db_conn, $email);
 
             $query = "SELECT effettua.voto, tvotazione.descrizione

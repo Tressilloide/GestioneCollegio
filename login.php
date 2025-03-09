@@ -86,6 +86,11 @@
                     $_SESSION['nome_utente'] = $row['nome'];
                     $_SESSION['email_utente'] = $email;
                     $_SESSION['if_loggato'] = true;
+                    if($email == 'collaboratori@buonarroti.tn.it'){
+                        $_SESSION['is_admin'] = true;
+                    } else {
+                        $_SESSION['is_admin'] = false;
+                    }
                     header("refresh:3; areariservata.php");
                 } else {
                     $_SESSION['if_loggato'] = false;
