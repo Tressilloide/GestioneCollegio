@@ -108,7 +108,7 @@
             </div>
             <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li class="active"><a href="#">Gestione Account</a></li>
+                <li class="active"><a href="gestione_account.php">Gestione Account</a></li>
                 <li>
                     <a href="#" class="nav-link text-danger" onclick="document.getElementById('logoutForm').submit();">Logout</a>
                     <form id="logoutForm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" style="display: none;">
