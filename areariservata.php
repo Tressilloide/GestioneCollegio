@@ -88,7 +88,7 @@
 
             $query = "SELECT effettua.voto, tvotazione.descrizione
                 FROM effettua
-                JOIN tdocente ON effettua.id_docente = tdocente.id_contatto
+                JOIN tdocente ON effettua.id_docente = tdocente.id_docente
                 JOIN tvotazione ON effettua.id_votazione = tvotazione.id_votazione
                 WHERE tdocente.email = '$email'
             ";
