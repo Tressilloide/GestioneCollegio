@@ -81,36 +81,37 @@
         </style>
     </head>
     <body>
-        <?php
-            if (!isset($error_message)) {
-                if (isset($_POST['btnInserisci'])) {
-                    $nome = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtNome']))));
-                    $cognome = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtCognome']))));
-                    $email = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));  
-                    $user_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
-                    $confirm_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtConfirmPassword']));
-                    
-                    if ($user_password !== $confirm_password) {
-                        $message = "Le password non coincidono!";
-                    } else {
-                        $password_hash = password_hash($user_password, PASSWORD_DEFAULT);
-                        $query_insert = "INSERT INTO tdocente (nome, cognome, email, user_password) VALUES('$nome', '$cognome', '$email', '$password_hash')";
-
-                        try {
-                            $insert = @mysqli_query($db_conn, $query_insert);
-                            $message = $insert ? "Utente creato con successo!" : "Errore nella creazione dell'utente!";
-                            header("refresh:3; index.php");
-                        } catch (Exception $ex) {
-                            $message = $ex->getMessage();
-                            header("refresh:3");
-                        }
-                    }
-                    echo $message;
-                } else {
-        ?>
+        
         <div class="container">
             <div class="image-text">
                 <h2 style="font-weight: bold;">REGISTRATI</h2>
+                    <?php
+                        if (!isset($error_message)) {
+                            if (isset($_POST['btnInserisci'])) {
+                                $nome = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtNome']))));
+                                $cognome = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtCognome']))));
+                                $email = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));  
+                                $user_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
+                                $confirm_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtConfirmPassword']));
+                                
+                                if ($user_password !== $confirm_password) {
+                                    $message = "Le password non coincidono!";
+                                } else {
+                                    $password_hash = password_hash($user_password, PASSWORD_DEFAULT);
+                                    $query_insert = "INSERT INTO tdocente (nome, cognome, email, user_password) VALUES('$nome', '$cognome', '$email', '$password_hash')";
+
+                                    try {
+                                        $insert = @mysqli_query($db_conn, $query_insert);
+                                        $message = $insert ? "Utente creato con successo!" : "Errore nella creazione dell'utente!";
+                                        header("refresh:3; index.php");
+                                    } catch (Exception $ex) {
+                                        $message = $ex->getMessage();
+                                        header("refresh:3");
+                                    }
+                                }
+                                echo $message;
+                            } else {
+                    ?>
                 <form name="frmContattiInserimento" method="post" action="<?=$_SERVER['PHP_SELF']?>" onsubmit="setEmail()">
                     <div class="form-group">
                         <label for="txtEmail">Email:</label>
