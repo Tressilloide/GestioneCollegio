@@ -104,6 +104,7 @@ $collegi_result = mysqli_query($db_conn, "SELECT id_collegio, descrizione FROM t
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Seleziona Collegio</button>
+            <a href="admin.php" class="btn btn-primary">Torna indietro</a>
         </form>
     </div>
 </body>

@@ -72,6 +72,7 @@
                 <input type="text" class="form-control" id="descrizione_proposta" name="descrizione_proposta" required>
             </div>
             <button type="submit" class="btn btn-primary" name="crea_proposta">Crea Proposta</button>
+            <a href="admin.php" class="btn btn-primary">Torna indietro</a>
         </form>
     </div>
 
