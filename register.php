@@ -8,11 +8,10 @@
     <head>
         <title>Inserimento contatto</title>
         <meta charset="UTF-8">
-         <style>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <style>
             body {
-                background-image: url('images/register.jpg');
-                background-size: cover;
-                background-repeat: no-repeat;
                 background-attachment: fixed;
             }
             table {
@@ -22,15 +21,19 @@
                 border: 1px solid;
             }
             .input-group .form-control,
-            .input-group .input-group-addon {
+            .input-group {
+                width: 100%;
+            }
+            .input-group-addon {
                 width: 50%;
+                text-align: center;
             }
             .image-text {
                 position: absolute;
                 top: 50%; 
                 left: 50%;
                 transform: translate(-50%, -50%);
-                font-size: 2em;
+                font-size: 1.5em; /* Ridotto per miglior adattabilità */
                 background-color: rgba(255, 255, 255, 0.8);
                 padding: 10px 20px; 
                 border-radius: 20px;
@@ -38,11 +41,16 @@
                 box-shadow: 0 2px 10px rgba(0, 0, 255, 0.3); 
                 color: #344ceb;
                 font-weight: bold;
-                margin-bottom: 20px; /* Add this line */
+                width: 90%;
+                max-width: 400px;
             }
             label {
-                font-size: 0.67em;
+                font-size: 0.9em;
                 color: black;
+            }
+            button, a.btn {
+                width: 100%; /* Rende i pulsanti più accessibili su mobile */
+                margin-top: 5px;
             }
             button[name="btnInserisci"] {
                 background-color:#344ceb;
@@ -57,7 +65,6 @@
             }
             button[name="btnReset"]:hover {
                 background-color: #2a3b9d;
-                color: white;
             }
             a[name="btnBack"] {
                 background-color:#344ceb;
@@ -66,49 +73,43 @@
             a[name="btnBack"]:hover {
                 background-color: #2a3b9d;
             }
+            @media screen and (max-width: 600px) {
+                .image-text {
+                    font-size: 1.2em;
+                }
+            }
         </style>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     </head>
     <body>
         <?php
             if (!isset($error_message)) {
                 if (isset($_POST['btnInserisci'])) {
-                    $nome           = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtNome']))));
-                    $cognome        = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtCognome']))));
-                    $email    = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));  
-                    $user_password   = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
+                    $nome = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtNome']))));
+                    $cognome = @mysqli_real_escape_string($db_conn, ucwords(strtolower(filtro_testo($_POST['txtCognome']))));
+                    $email = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));  
+                    $user_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
                     $confirm_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtConfirmPassword']));
                     
                     if ($user_password !== $confirm_password) {
                         $message = "Le password non coincidono!";
                     } else {
                         $password_hash = password_hash($user_password, PASSWORD_DEFAULT);
-
-                        $query_insert = "INSERT INTO tdocente (nome, cognome, email, user_password) "
-                                      . "VALUES('$nome', '$cognome', '$email', '$password_hash')";
+                        $query_insert = "INSERT INTO tdocente (nome, cognome, email, user_password) VALUES('$nome', '$cognome', '$email', '$password_hash')";
 
                         try {
                             $insert = @mysqli_query($db_conn, $query_insert);
-                            if($insert){
-                                $message = "Utente creato con successo!";
-                            }else{
-                                $message = "Errore nella creazione dell'utente!";
-                            }
-
+                            $message = $insert ? "Utente creato con successo!" : "Errore nella creazione dell'utente!";
                             header("refresh:3; index.php");
                         } catch (Exception $ex) {
                             $message = $ex->getMessage();
-
                             header("refresh:3");
                         }
                     }
-
                     echo $message;
                 } else {
         ?>
-            <div class="container">
-            <div class="image-text" >
+        <div class="container">
+            <div class="image-text">
                 <h2 style="font-weight: bold;">REGISTRATI</h2>
                 <form name="frmContattiInserimento" method="post" action="<?=$_SERVER['PHP_SELF']?>" onsubmit="setEmail()">
                     <div class="form-group">
@@ -121,39 +122,35 @@
                     </div>
                     <div class="form-group">
                         <label for="txtNome">Nome:</label>
-                        <input type="text" class="form-control" id="txtNome" name="txtNome" placeholder="Inserisci il nome" required >
+                        <input type="text" class="form-control" id="txtNome" name="txtNome" placeholder="Inserisci il nome" required>
                     </div>
                     <div class="form-group">
                         <label for="txtCognome">Cognome:</label>
-                        <input type="text" class="form-control" id="txtCognome" name="txtCognome" placeholder="Inserisci il cognome" required >
+                        <input type="text" class="form-control" id="txtCognome" name="txtCognome" placeholder="Inserisci il cognome" required>
                     </div>
                     <div class="form-group">
                         <label for="txtPassword">Password:</label>
-                        <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Inserisci la password" required >
+                        <input type="password" class="form-control" id="txtPassword" name="txtPassword" placeholder="Inserisci la password" required>
                     </div>
                     <div class="form-group">
                         <label for="txtConfirmPassword">Conferma Password:</label>
-                        <input type="password" class="form-control" id="txtConfirmPassword" name="txtConfirmPassword" placeholder="Conferma la password" required >
-                    </div>
-                    <div class="form-group">
-                        <label for="checkboxPsw">Mostra Password:</label>
-                        <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()">
+                        <input type="password" class="form-control" id="txtConfirmPassword" name="txtConfirmPassword" placeholder="Conferma la password" required>
                     </div>
                     <button type="submit" class="btn btn-primary" name="btnInserisci">Registrati</button>
-                    <button type="reset" class="btn btn-secondary" name="btnReset">Cancella</button>
+                    <button type="reset" class="btn btn-primary" name="btnReset">Cancella</button>
                     <a href="index.php" class="btn btn-primary" name="btnBack">Torna indietro</a>
                 </form>
-                </div>
             </div>
+        </div>
         <?php
                 }
             } else {
                 echo $error_message;
-
                 header("refresh:2; index.php");
             }
         ?>
     </body>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script>
