@@ -52,27 +52,33 @@
         <h2>LOGIN</h2>
         <?php
             if (isset($_POST['btnLogin'])) {
-                $email = mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));
-                $user_password = mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
-
+                $email = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));
+                $user_password = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtPassword']));
+    
                 $query = "SELECT user_password, nome FROM tdocente WHERE email = '$email'";
-                $result = mysqli_query($db_conn, $query);
-
-                if ($result && mysqli_num_rows($result) > 0) {
-                    $row = mysqli_fetch_assoc($result);
-                    if (password_verify($user_password, $row['user_password'])) {
+                $result = @mysqli_query($db_conn, $query);
+    
+                if ($result && mysqli_num_rows($result) > 0) { //se result è true e nrighe > 0
+                    $row = mysqli_fetch_assoc($result); //prendo la riga (email unique quindi solo 1 riga max)
+                    if (password_verify($user_password, $row['user_password'])) { //confronto le 2 password (eseguo l'hash della pasword inserita e lo confronto con quello nel db)
+                        echo "Login effettuato con successo!";
                         $_SESSION['nome_utente'] = $row['nome'];
                         $_SESSION['email_utente'] = $email;
                         $_SESSION['if_loggato'] = true;
-                        echo "<p class='text-success'>Login effettuato con successo! Reindirizzamento...</p>";
+                        if($email == 'collaboratori@buonarroti.tn.it'){
+                            $_SESSION['is_admin'] = true;
+                        } else {
+                            $_SESSION['is_admin'] = false;
+                        }
                         header("refresh:3; areariservata.php");
                     } else {
-                        echo "<p class='text-danger'>Password errata!</p>";
                         $_SESSION['if_loggato'] = false;
+                        echo "Password errata!";
                     }
-                } else {
-                    echo "<p class='text-danger'>Email non trovata! Registrati se non lo hai ancora fatto.</p>";
+                } else {//email non trovata
+                    echo "Email non trovata (ricontrolla l'email inserita, se non sei registrato, registrati in fretta :) )";
                     $_SESSION['if_loggato'] = false;
+    
                 }
             } else {
         ?>
