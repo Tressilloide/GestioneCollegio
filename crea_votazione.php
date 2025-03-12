@@ -22,7 +22,7 @@
         $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
         $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
 
-        // Genera un OTP di 3 cifre
+        //OTP di 3 cifre
         $otp = rand(100, 999);
 
         $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio, otp) 
@@ -30,18 +30,15 @@
 
         if (mysqli_query($db_conn, $query_votazione)) {
             $id_votazione = mysqli_insert_id($db_conn);
-            // Redirect to visualizza_otp.php with the OTP and ID votazione
             header("Location: visualizza_otp.php?otp=$otp&id_votazione=$id_votazione");
             exit();
         } else {
-            echo "<h2>Errore nella creazione della votazione: " . mysqli_error($db_conn) . "</h2>";
+            ?><h2>Errore nella creazione della votazione: </h2><?php
         }
     }
 
-    // Recupera le proposte esistenti per il menu a tendina
     $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tproposta");
 
-    // Recupera l'ID del collegio dalla URL
     $id_collegio = isset($_GET['id_collegio']) ? $_GET['id_collegio'] : '';
 
     // Recupera il titolo del collegio dal database
@@ -107,7 +104,7 @@
             <div class="form-group">
                 <label for="collegio_titolo">Collegio:</label>
                 <input type="text" class="form-control" id="collegio_titolo" name="collegio_titolo" value="<?php echo htmlspecialchars($collegio_titolo); ?>" readonly>
-                <input type="hidden" name="id_collegio" value="<?php echo htmlspecialchars($id_collegio); ?>">
+                <input type="hidden" name="id_collegio" value="<?php echo htmlspecialchars($id_collegio);//passo id collegio  ?>">
             </div>
             <button type="submit" class="btn btn-primary" name="crea_votazione">Crea Votazione</button>
         </form>

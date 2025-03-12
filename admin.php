@@ -30,13 +30,13 @@
             } else {
                 echo "<h2>Errore nella creazione del collegio: " . mysqli_error($db_conn) . "</h2>";
             }
-            // Redirect per evitare duplicati
+            //evito dupliocati modulo
             header("Location: admin.php");
             exit();
         }
     }
 
-    // Recupera i collegi esistenti per il menu a tendina
+    //collegi esistenti per il menu a tendina
     $collegi_result = mysqli_query($db_conn, "SELECT id_collegio, descrizione FROM tcollegiodocenti");
 ?>
 

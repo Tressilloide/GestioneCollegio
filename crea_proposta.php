@@ -19,22 +19,22 @@
         $titolo = mysqli_real_escape_string($db_conn, $_POST['titolo']);
         $descrizione_proposta = mysqli_real_escape_string($db_conn, $_POST['descrizione_proposta']);
 
-        // Controlla se la proposta esiste già
+        // ontrolla se la proposta esiste già
         $query_check = "SELECT * FROM tproposta WHERE titolo = '$titolo' AND descrizione = '$descrizione_proposta'";
         $result_check = mysqli_query($db_conn, $query_check);
 
         if (mysqli_num_rows($result_check) > 0) {
-            echo "<h2>Proposta già esistente!</h2>";
+           ?> <h2>Proposta già esistente!</h2> <?php;
         } else {
             $query_proposta = "INSERT INTO tproposta (titolo, descrizione) VALUES ('$titolo', '$descrizione_proposta')";
 
             if (mysqli_query($db_conn, $query_proposta)) {
-                echo "<h2>Proposta creata con successo!</h2>";
+                ?><h2>Proposta creata con successo!</h2><?php 
             } else {
-                echo "<h2>Errore nella creazione della proposta: " . mysqli_error($db_conn) . "</h2>";
+                ?><h2>Errore nella creazione della proposta</h2><?php 
             }
         }
-        // Redirect per evitare duplicati
+        //evita duplicato inserimento
         header("Location: crea_proposta.php");
         exit();
     }

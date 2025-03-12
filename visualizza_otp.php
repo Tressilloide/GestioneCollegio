@@ -16,11 +16,11 @@ ioneCollegio/visualizza_otp.php
 
     include 'connessione.php';
 
-    // Recupera l'OTP e l'ID della votazione dalla URL
+    //OTP e l'ID della votazione dalla URL
     $otp = isset($_GET['otp']) ? $_GET['otp'] : '';
     $id_votazione = isset($_GET['id_votazione']) ? $_GET['id_votazione'] : '';
 
-    // Recupera i dettagli della proposta votata
+    //proposta
     $proposta_titolo = '';
     $proposta_descrizione = '';
     if ($id_votazione) {
