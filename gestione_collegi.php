@@ -48,8 +48,8 @@ $collegi_result = mysqli_query($db_conn, "SELECT id_collegio, descrizione FROM t
 <html lang="en">
 
 <head>
-    <title>Pagina Admin</title>
     <meta charset="utf-8">
+    <title>Gestione collegi</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
@@ -65,27 +65,47 @@ $collegi_result = mysqli_query($db_conn, "SELECT id_collegio, descrizione FROM t
 </head>
 
 <body>
-    <h1>Benvenuto nella pagina riservata agli admin</h1>
-
     <div class="container"><br>
-        <?php
-        $query_docenti = "SELECT COUNT(*) AS num_docenti FROM tdocente";
-        $result_docenti = mysqli_query($db_conn, $query_docenti);
-        $row_docenti = mysqli_fetch_assoc($result_docenti);
-        echo "<h3>Numero utenti registrati: " . $row_docenti['num_docenti'] . "</h3>";
-        ?>
-
+        <h2>Crea un nuovo collegio</h2>
+        <form method="post" action="">
+            <div class="form-group">
+                <label for="data_collegio">Data Collegio:</label>
+                <input type="date" class="form-control" id="data_collegio" name="data_collegio" required>
+            </div>
+            <div class="form-group">
+                <label for="ora_inizio">Ora Inizio:</label>
+                <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" required>
+            </div>
+            <div class="form-group">
+                <label for="ora_fine">Ora Fine:</label>
+                <input type="time" class="form-control" id="ora_fine" name="ora_fine" required>
+            </div>
+            <div class="form-group">
+                <label for="descrizione">Descrizione:</label>
+                <input type="text" class="form-control" id="descrizione" name="descrizione" required>
+            </div>
+            <button type="submit" class="btn btn-primary" name="crea_collegio">Crea Collegio</button>
+        </form>
         <br><br>
-
-        <h3>Gestione proposte, votazioni e collegi</h3>
-        <a href="crea_proposta.php" class="btn btn-primary">Gestione proposte</a><br><br>
-
-        <h3>Gestione collegi</h3>
-        <a href="gestione_collegi.php" class="btn btn-primary">Gestione collegi</a>
+        <h2>Seleziona un collegio esistente</h2>
+        <form method="get" action="crea_votazione.php">
+            <div class="form-group">
+                <label for="id_collegio">Collegio:</label>
+                <select class="form-control" id="id_collegio" name="id_collegio" required>
+                    <?php
+                    if ($collegi_result && mysqli_num_rows($collegi_result) > 0) {
+                        while ($row = mysqli_fetch_assoc($collegi_result)) {
+                            echo "<option value='" . $row['id_collegio'] . "'>" . htmlspecialchars($row['descrizione']) . "</option>";
+                        }
+                    } else {
+                        echo "<option value=''>Nessun collegio disponibile</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Seleziona Collegio</button>
+        </form>
     </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </body>
 
 </html>
