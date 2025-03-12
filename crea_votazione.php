@@ -15,6 +15,8 @@
 
     include 'connessione.php';
 
+    $docenti_non_trovati = [];
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $descrizione_votazione = mysqli_real_escape_string($db_conn, $_POST['descrizione_votazione']);
         $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
@@ -30,8 +32,38 @@
 
         if (mysqli_query($db_conn, $query_votazione)) {
             $id_votazione = mysqli_insert_id($db_conn);
-            header("Location: visualizza_otp.php?otp=$otp&id_votazione=$id_votazione");
-            exit();
+
+            // Gestione caricamento file CSV
+            if (isset($_FILES['file_csv']) && $_FILES['file_csv']['error'] == 0) {
+                $file_tmp = $_FILES['file_csv']['tmp_name'];
+                $file = fopen($file_tmp, 'r');
+                
+                // Salta l'intestazione del file CSV
+                fgetcsv($file);
+
+                while (($line = fgetcsv($file)) !== FALSE) {
+                    $email_docente = mysqli_real_escape_string($db_conn, $line[1]);
+
+                    // Recupera l'id_docente dal database usando l'email
+                    $docente_result = mysqli_query($db_conn, "SELECT id_docente FROM tdocente WHERE email = '$email_docente'");
+                    if ($docente_result && mysqli_num_rows($docente_result) > 0) {
+                        $docente_row = mysqli_fetch_assoc($docente_result);
+                        $id_docente = $docente_row['id_docente'];
+
+                        // Inserisci il docente nella tabella ammesso
+                        $query_ammesso = "INSERT INTO ammesso (id_docente, id_votazione) VALUES ('$id_docente', '$id_votazione')";
+                        mysqli_query($db_conn, $query_ammesso);
+                    } else {
+                        $docenti_non_trovati[] = $email_docente;
+                    }
+                }
+                fclose($file);
+            }
+
+            if (empty($docenti_non_trovati)) {
+                header("Location: visualizza_otp.php?otp=$otp&id_votazione=$id_votazione");
+                exit();
+            }
         } else {
             ?><h2>Errore nella creazione della votazione: </h2><?php
         }
@@ -41,7 +73,7 @@
 
     $id_collegio = isset($_GET['id_collegio']) ? $_GET['id_collegio'] : '';
 
-    // Recupera il titolo del collegio dal database
+    //Recupera il titolo del collegio dal database
     $collegio_titolo = '';
     if ($id_collegio) {
         $collegio_result = mysqli_query($db_conn, "SELECT descrizione FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'");
@@ -74,7 +106,8 @@
     <h1>Crea una nuova votazione</h1>
 
     <div class="container">
-        <form method="post" action="">
+        <?php //necessario quando si vuole caricare file . ?>
+        <form method="post" action="" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="descrizione_votazione">Descrizione:</label>
                 <input type="text" class="form-control" id="descrizione_votazione" name="descrizione_votazione" required>
@@ -106,8 +139,22 @@
                 <input type="text" class="form-control" id="collegio_titolo" name="collegio_titolo" value="<?php echo htmlspecialchars($collegio_titolo); ?>" readonly>
                 <input type="hidden" name="id_collegio" value="<?php echo htmlspecialchars($id_collegio);//passo id collegio  ?>">
             </div>
+            <div class="form-group">
+                <label for="file_csv">Carica CSV Docenti Ammessi:</label>
+                <input type="file" class="form-control" id="file_csv" name="file_csv" accept=".csv">
+            </div>
             <button type="submit" class="btn btn-primary" name="crea_votazione">Crea Votazione</button>
         </form>
+        <?php
+            if (!empty($docenti_non_trovati)) {
+                echo "<h3>I seguenti docenti non sono stati trovati nel database:</h3>";
+                echo "<ul>";
+                foreach ($docenti_non_trovati as $email) {
+                    echo "<li>" . htmlspecialchars($email) . "</li>";
+                }
+                echo "</ul>";
+            }
+        ?>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
