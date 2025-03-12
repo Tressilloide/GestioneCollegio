@@ -4,7 +4,6 @@
     session_start();
 ?>
 
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -29,7 +28,6 @@
             flex-direction: column;   /* Rende possibile l'uso di flexbox per il layout */
         }
 
-
         .navbar {
             position: fixed;
             top: 0;
@@ -37,7 +35,6 @@
             width: 100%;
             z-index: 1000;
         }
-
 
         .center-container {
             display: flex;
@@ -48,7 +45,6 @@
             width: 70%;  /* Imposta la larghezza totale per i div a sinistra e destra */
             padding: 20px;
         }
-
 
         .center-box {
             width: 45%;  /* Ogni div occuperà il 45% della larghezza */
@@ -62,9 +58,6 @@
         .list-group-item{
             color: black;
         }
-
-
-
     </style>
 </head>
 <body>
@@ -93,7 +86,6 @@
                 WHERE tdocente.email = '$email'
             ";
             $result = mysqli_query($db_conn, $query);
-
     ?>
     <!-- Navbar fissa in cima -->
     <nav class="navbar navbar-default">
@@ -120,21 +112,19 @@
         </div>
     </nav>
 
-
     <!-- Contenitore centrale con div sinistro e destro -->
     <div class="center-container">
         <!-- Div sinistro -->
         <div class="center-box">
             <h2>Accedi alla votazione</h2>
-            <form name="frmVoto" method="post" action="<?=$_SERVER['PHP_SELF']?>">
+            <form name="frmVoto" method="post" action="votazione.php">
                 <div class="form-group">
                     <label for="txtOTP">One Time Password:</label>
-                    <input type="password" class="form-control" id="txtOTP" name="txtOTP" required placeholder="Inserisci la OTP">
-                </div>
-                <button type="submit" class="btn btn-primary" name="btnLogin">Login</button>
+                    <input type="password" class="form-control" id="txtOTP" name="otp" required placeholder="Inserisci la OTP">
+                </div><!--  fa  un post a votazione.php    -->
+                <button type="submit" class="btn btn-primary" name="verifica_otp">Login</button>
             </form>
         </div>
-
 
         <!-- Div destro -->
         <div class="center-box">
@@ -157,10 +147,7 @@
                 ?>
             </ul>
         </div>
-
-
     </div>
-
 
     <?php
         } else {
