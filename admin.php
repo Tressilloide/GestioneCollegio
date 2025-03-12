@@ -18,30 +18,6 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
 }
 
 include 'connessione.php';
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['crea_collegio'])) {
-        $data_collegio = mysqli_real_escape_string($db_conn, $_POST['data_collegio']);
-        $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
-        $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
-        $descrizione = mysqli_real_escape_string($db_conn, $_POST['descrizione']);
-
-        $query_collegio = "INSERT INTO tcollegiodocenti (data_collegio, ora_inizio, ora_fine, descrizione) 
-                               VALUES ('$data_collegio', '$ora_inizio', '$ora_fine', '$descrizione')";
-
-        if (mysqli_query($db_conn, $query_collegio)) {
-            echo "<h2>Collegio creato con successo!</h2>";
-        } else {
-            echo "<h2>Errore nella creazione del collegio: " . mysqli_error($db_conn) . "</h2>";
-        }
-        // Redirect per evitare duplicati
-        header("Location: admin.php");
-        exit();
-    }
-}
-
-// Recupera i collegi esistenti per il menu a tendina
-$collegi_result = mysqli_query($db_conn, "SELECT id_collegio, descrizione FROM tcollegiodocenti");
 ?>
 
 <!DOCTYPE html>
