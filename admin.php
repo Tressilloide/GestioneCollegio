@@ -10,6 +10,7 @@
     if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
         ?> <h1>Non sei autorizzato ad accedere a questa pagina.</h1> <?php
         header("refresh:2; index.php");
+        // TEST
         exit();
     }
 
