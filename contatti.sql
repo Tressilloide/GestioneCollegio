@@ -62,3 +62,11 @@ CREATE TABLE effettua(
     FOREIGN KEY(id_docente) REFERENCES tdocente(id_docente),
     FOREIGN KEY(id_votazione) REFERENCES tvotazione(id_votazione)
 ) ENGINE = InnoDB;
+
+CREATE TABLE ammesso(
+    id_docente                  BIGINT              NOT NULL,
+    id_votazione                BIGINT              NOT NULL,
+    PRIMARY KEY(id_docente, id_votazione),
+    FOREIGN KEY(id_docente) REFERENCES tdocente(id_docente),
+    FOREIGN KEY(id_votazione) REFERENCES tvotazione(id_votazione)
+) ENGINE = InnoDB;
