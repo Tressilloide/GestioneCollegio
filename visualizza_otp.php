@@ -1,4 +1,3 @@
-ioneCollegio/visualizza_otp.php
 <?php
     session_start();
 

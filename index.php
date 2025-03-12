@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>Immagini Divise con Testo</title>
+    <title>Gestione Collegi Buonarroti</title>
     <style>
         .title {
             background-color: #344ceb;
