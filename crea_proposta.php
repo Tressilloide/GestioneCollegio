@@ -39,6 +39,12 @@
         exit();
     }
 
+    if (isset($_POST['btnModifica'])) {
+        $_SESSION['id_proposta'] = $_POST['id_proposta'];
+        header("Location: proposta_modifica.php");
+        exit();
+    }
+
 // Query per ottenere tutti i collegi
 $query_collegi = "SELECT * FROM tproposta";
 $result_collegi = mysqli_query($db_conn, $query_collegi);
@@ -87,9 +93,9 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
         <table class="table table-bordered">
             <tr>
                 <th>Titolo</th>
-                <th >Descrizione</th>
-                <th >Modifica</th>
-                <th >Elimina</th>
+                <th>Descrizione</th>
+                <th>Modifica</th>
+                <th>Elimina</th>
             </tr>
             <tr>
                 <?php
@@ -102,21 +108,24 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                                 <td><?= htmlspecialchars($row['descrizione']) ?></td>
                             </li>
                             <td>
-                                <a href="proposta_modifica.php?id=<?=$id_proposta?>">
-                                    <img src="images/modifica.png">
-                                </a>
+                                <form method="post" action="">
+                                    <input type="hidden" name="id_proposta" value="<?= $id_proposta ?>">
+                                    <button type="submit" name="btnModifica" class="btn btn-link">
+                                        <img src="images/modifica.png">
+                                    </button>
+                                </form>
                             </td>
                             <td>
-                                <a href="proposta_cancellazione.php?id=<?=$id_proposta?>">
+                                <button id="btnElimina" href="proposta_cancellazione.php?id=<?=$id_proposta?>">
                                     <img src="images/cancellazione.png">
-                                </a>
+                                </button>
                             </td>
                         </tr>
                 <?php
                         }
                     } else {
                 ?>
-                    <td colspan='2'>
+                    <td colspan='4'>
                         <li>Nessuna proposta trovata</li>
                     </td>
                 <?php

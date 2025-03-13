@@ -19,6 +19,13 @@
     }
 
     include 'connessione.php';
+
+    $query = "SELECT titolo, descrizione FROM tdocente WHERE id = " . $_GET['id'] ;
+    $result = mysqli_query($db_conn, $query);
+    $user = mysqli_fetch_assoc($result);
+
+    $titolo = $user['titolo'];
+    $descrizione = $user['descrizione'];
 ?>
 
 <!DOCTYPE html>
@@ -54,9 +61,18 @@
 <body>
 
     <div class="form-container">
-        
-
-
+        <h2>Modifica la proposta</h2>
+        <form method="post">
+            <div class="form-group">
+                <label for="nome">Titolo:</label>
+                <input type="text" id="nome" name="nome" class="form-control" value="<?= htmlspecialchars($row['titolo']) ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="cognome">Proposta:</label>
+                <input type="text" id="cognome" name="cognome" class="form-control" value="<?= htmlspecialchars($row['descrizione']) ?>" required>
+            </div>
+            <button type="submit" name="update_info" class="btn btn-primary">Aggiorna Informazioni</button>
+        </form>
     </div>
 </body>
 </html>
