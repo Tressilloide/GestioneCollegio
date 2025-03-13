@@ -21,18 +21,31 @@
             width: 100vw;
         }
 
-        /* Barra superiore stile Mastercom */
         .title-bar {
             background-color: #007bff;
             color: white;
             width: 100%;
             padding: 20px;
             text-align: center;
-            font-size: 24px;
+            font-size: 44px;
             font-weight: bold;
+            position: relative;
+            height: 100px; /* Imposta l'altezza della barra del titolo */
         }
 
-        /* Container per i box */
+        .title-bar .image-container {
+            font-size: 9px;
+            position: absolute;
+            bottom: 0; /* Allinea l'immagine al fondo della barra del titolo */
+            right: 0px; /* Regola la posizione a destra */
+            height: 100%; /* Imposta l'altezza del contenitore al 100% */
+        }
+
+        .title-bar .image-container img {
+            width: auto; /* Mantieni il rapporto d'aspetto */
+            height: 100%; /* Imposta l'altezza dell'immagine al 100% */
+        }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -40,11 +53,13 @@
             height: 100%;
         }
 
-        /* Stile dei pulsanti */
         .box {
             display: flex;
             align-items: center;
+            flex-direction: column;
             justify-content: center;
+            text-align: center;
+            padding: 20px;
             flex: 1;
             background-color: white;
             color: black;
@@ -60,16 +75,15 @@
         }
 
         .box:hover {
-            background-color: #f0f0f0;
+            background-color:rgb(240, 251, 255);
         }
 
-        /* Aggiunta icone */
         .box span {
             margin-right: 10px;
-            font-size: 28px;
+            font-size: 90px;
         }
+    
 
-        /* Layout orizzontale su schermi più grandi */
         @media (min-width: 768px) {
             .container {
                 flex-direction: row;
@@ -84,17 +98,47 @@
                 border-right: none;
             }
         }
+        
+
+        @media (max-width: 767px) {
+            .title-bar {
+                font-size: 24px;
+                height: auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between; /* Distribuisce titolo e immagine */
+                padding: 10px 20px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .title-bar .image-container {
+                height: 50px;
+                display: flex;
+                align-items: center;
+            }
+
+            .title-bar .image-container img {
+                height: 40px; /* Ridimensiona l'immagine */
+            }
+        }
+        
     </style>
 </head>
 <body>
     <div class="title-bar">
         Home Collegio Docenti
+        <div class="image-container">
+            <a href="https://www.buonarroti.tn.it/" target="_blank">
+                <img src="images\Buonarroti_Icona_Updated.jpg" alt="Immagine Buonarroti">
+            </a>
+        </div>
     </div>
 
     <div class="container">
         <a href="login.php" class="box"><span>🔑</span>Login</a>
         <a href="register.php" class="box"><span>📝</span>Registrazione</a>
-        <a href="https://www.buonarroti.tn.it" class="box"><span>🌐</span>Buonarroti</a>
     </div>
 </body>
 </html>
