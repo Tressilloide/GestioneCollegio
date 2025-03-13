@@ -87,7 +87,9 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
         <table class="table table-bordered">
             <tr>
                 <th>Titolo</th>
-                <th>Descrizione</th>
+                <th >Descrizione</th>
+                <th >Modifica</th>
+                <th >Elimina</th>
             </tr>
             <tr>
                 <?php
@@ -99,6 +101,16 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                                 <td><?= htmlspecialchars($row['titolo']) ?></td>
                                 <td><?= htmlspecialchars($row['descrizione']) ?></td>
                             </li>
+                            <td>
+                                <a href="proposta_modifica.php?id=<?=$id_proposta?>">
+                                    <img src="images/modifica.png">
+                                </a>
+                            </td>
+                            <td>
+                                <a href="proposta_cancellazione.php?id=<?=$id_proposta?>">
+                                    <img src="images/cancellazione.png">
+                                </a>
+                            </td>
                         </tr>
                 <?php
                         }
