@@ -38,6 +38,10 @@
         header("Location: crea_proposta.php");
         exit();
     }
+
+// Query per ottenere tutti i collegi
+$query_collegi = "SELECT * FROM tproposta";
+$result_collegi = mysqli_query($db_conn, $query_collegi);
 ?>
 
 <!DOCTYPE html>
@@ -56,6 +60,10 @@
             background-size: 20%;
             height: 100vh; 
         }
+
+        li {
+            list-style-type: none;
+        }
     </style>
 </head>
 <body>
@@ -72,7 +80,38 @@
                 <input type="text" class="form-control" id="descrizione_proposta" name="descrizione_proposta" required>
             </div>
             <button type="submit" class="btn btn-primary" name="crea_proposta">Crea Proposta</button>
+            <a href="admin.php" class="btn btn-primary">Torna indietro</a>
         </form>
+        <br><br>
+        <h2>Proposte create</h2>
+        <table class="table table-bordered">
+            <tr>
+                <th>Titolo</th>
+                <th>Descrizione</th>
+            </tr>
+            <tr>
+                <?php
+                if ($result_collegi && mysqli_num_rows($result_collegi) > 0) {
+                    while ($row = mysqli_fetch_assoc($result_collegi)) {
+                ?>
+                        <tr>
+                            <li>
+                                <td><?= htmlspecialchars($row['titolo']) ?></td>
+                                <td><?= htmlspecialchars($row['descrizione']) ?></td>
+                            </li>
+                        </tr>
+                <?php
+                        }
+                    } else {
+                ?>
+                    <td colspan='2'>
+                        <li>Nessuna proposta trovata</li>
+                    </td>
+                <?php
+                    }
+                ?>
+            </tr>
+        </table>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
