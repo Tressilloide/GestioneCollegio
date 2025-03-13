@@ -13,12 +13,26 @@
         <style>
             body {
                 background-attachment: fixed;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
             }
             table {
                 border-collapse: collapse;
             }
             td, th {
                 border: 1px solid;
+            }
+            .register-container {
+                position: absolute;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 255, 0.3);
+                max-width: 400px;
+                width: 100%;
+                text-align: center;
             }
             .input-group .form-control,
             .input-group {
@@ -82,9 +96,8 @@
     </head>
     <body>
         
-        <div class="container">
-            <div class="image-text">
-                <h2 style="font-weight: bold;">REGISTRATI</h2>
+        <div class="register-container">
+                <h2 style="font-weight: bold;">REGISTRAZIONE</h2>
                     <?php
                         if (!isset($error_message)) {
                             if (isset($_POST['btnInserisci'])) {
@@ -141,7 +154,6 @@
                     <button type="reset" class="btn btn-primary" name="btnReset">Cancella</button>
                     <a href="index.php" class="btn btn-primary" name="btnBack">Torna indietro</a>
                 </form>
-            </div>
         </div>
         <?php
                 }
