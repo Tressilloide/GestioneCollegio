@@ -1,22 +1,55 @@
 <?php
-    session_start();
-    if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
-        header("Location: index.php");
-        exit();
-    }
+session_start();
+if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
+    header("Location: index.php");
+    exit();
+}
 
-    if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-        ?> <h1>Non sei autorizzato ad accedere a questa pagina.</h1> <?php
-        header("refresh:2; index.php");
-        exit();
-    }
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    ?> <h1>Non sei autorizzato ad accedere a questa pagina.</h1> <?php
+    header("refresh:2; index.php");
+    exit();
+}
 
-    if (isset($_POST['logout'])) {
-        session_unset();
-        session_destroy();
-        header("Location: index.php");
-        exit();
+if (isset($_POST['logout'])) {
+    session_unset();
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+
+if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
+    $file = $_FILES['file']['tmp_name'];
+    $handle = fopen($file, "r");
+    if ($handle !== FALSE) {
+        require 'connessione.php'; // Assicurati di avere un file per la connessione al database
+
+        // Salta l'intestazione del file CSV
+        fgetcsv($handle);
+
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            $nome_completo = mysqli_real_escape_string($db_conn, $data[0]);
+            $email = mysqli_real_escape_string($db_conn, $data[1]);
+
+            // Dividi il nome completo in nome e cognome
+            $nome_parts = explode(' ', $nome_completo, 2);
+            $nome = $nome_parts[0];
+            $cognome = isset($nome_parts[1]) ? $nome_parts[1] : '';
+
+            $password = bin2hex(random_bytes(4)); // Genera una password casuale di 8 caratteri
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            $query = "INSERT INTO tdocente (nome, cognome, email, user_password) VALUES ('$nome', '$cognome', '$email', '$hashed_password')";
+            mysqli_query($db_conn, $query);
+        }
+        fclose($handle);
+        $message = "Docenti preregistrati con successo.";
+    } else {
+        $message = "Errore nell'apertura del file.";
     }
+} else {
+    $message = "Errore nel caricamento del file.";
+}
 ?>
 
 <!DOCTYPE html>
@@ -95,7 +128,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Area Admin</a>
+                <a class="navbar-brand" href="#">Gestisci Docenti</a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -111,25 +144,15 @@
     </nav>
     <div class="center-container">
         <div class="center-box">
-            <h2>Statistiche</h2>
-            <?php
-            include 'connessione.php';
-            $query_docenti = "SELECT COUNT(*) AS num_docenti FROM tdocente";
-            $result_docenti = mysqli_query($db_conn, $query_docenti);
-            if ($result_docenti) {
-                $row_docenti = mysqli_fetch_assoc($result_docenti);
-                echo "<h3>Numero utenti registrati: " . $row_docenti['num_docenti'] . "</h3>";
-            } else {
-                echo "<h3>Errore nel recupero dati.</h3>";
-            }
-            ?>
-        </div>
-
-        <div class="center-box">
-            <h2>Gestione</h2>
-            <a href="crea_proposta.php" class="btn btn-primary">Gestione proposte</a><br><br>
-            <a href="gestione_collegi.php" class="btn btn-primary">Gestione collegi</a>
-            <a href="gestisci_docenti.php" class="btn btn-primary">Gestisci docenti</a>
+            <h2>Carica CSV per preregistrare i docenti</h2>
+            <?php if (isset($message)) { echo "<p>$message</p>"; } ?>
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="file">Seleziona file CSV:</label>
+                    <input type="file" name="file" id="file" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Carica</button>
+            </form>
         </div>
     </div>
 
