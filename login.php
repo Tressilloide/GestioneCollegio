@@ -49,7 +49,7 @@
 </head>
 <body>
     <div class="login-container">
-        <h2>LOGIN</h2>
+        <h2 style="font-weight: bold;">LOGIN</h2>
         <?php
             if (isset($_POST['btnLogin'])) {
                 $email = @mysqli_real_escape_string($db_conn, filtro_testo($_POST['txtEmail']));
