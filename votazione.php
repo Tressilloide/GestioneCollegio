@@ -119,6 +119,9 @@
                 <button type="submit" class="btn btn-primary" name="verifica_otp">Verifica OTP</button>
             </form>
         <?php endif; ?>
+        <br>
+        <a href="areariservata.php" class="btn btn-primary">Torna indietro</a>
+
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
