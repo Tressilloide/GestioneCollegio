@@ -39,11 +39,13 @@
         exit();
     }
 
-    if (isset($_POST['btnModifica'])) {
-        $_SESSION['id_proposta'] = $_POST['id_proposta'];
-        header("Location: proposta_modifica.php");
-        exit();
+    if (isset($_POST['update_info'])) {
+        $new_titolo = mysqli_real_escape_string($db_conn, trim($_POST['titolo']));
+        $new_descrizione = mysqli_real_escape_string($db_conn, trim($_POST['descrizione']));
+    
+        $query_update = "UPDATE tproposta SET titolo = '$new_titolo', descrizione = '$new_descrizione' WHERE id_proposta = '$id_proposta'";
     }
+    
 
 // Query per ottenere tutti i collegi
 $query_collegi = "SELECT * FROM tproposta";
@@ -104,12 +106,12 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                 ?>
                         <tr>
                             <li>
-                                <td><?= htmlspecialchars($row['titolo']) ?></td>
-                                <td><?= htmlspecialchars($row['descrizione']) ?></td>
+                            <td><?= htmlspecialchars($row['titolo'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= htmlspecialchars($row['descrizione'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                             </li>
                             <td>
-                                <form method="post" action="">
-                                    <input type="hidden" name="id_proposta" value="<?= $id_proposta ?>">
+                                <form method="post" action="proposta_modifica.php">
+                                    <input type="hidden" name="id_proposta" value="<?= htmlspecialchars($row['id_proposta']) ?>">
                                     <button type="submit" name="btnModifica" class="btn btn-link">
                                         <img src="images/modifica.png">
                                     </button>
