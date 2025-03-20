@@ -93,8 +93,7 @@
 
     <div class="container">
         <a href="login.php" class="box"><span>🔑</span>Login</a>
-        <a href="register.php" class="box"><span>📝</span>Registrazione</a>
-        <a href="https://www.buonarroti.tn.it" class="box"><span>🌐</span>Buonarroti</a>
+        <a href="firstlogin.php" class="box"><span>📝</span>Primo Accesso</a>
     </div>
 </body>
 </html>
