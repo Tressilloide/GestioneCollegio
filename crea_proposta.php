@@ -1,6 +1,15 @@
 <?php
     session_start();
 
+    function console_log($output, $with_script_tags = true) {
+        $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) .
+        ');';
+        if ($with_script_tags) {
+            $js_code = '<script>' . $js_code . '</script>';
+        }
+        echo $js_code;
+    }
+
     if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
         ?> <h1>Non sei loggato, corri a loggarti.</h1> <?php
         header("refresh:2; index.php");
@@ -39,17 +48,35 @@
         exit();
     }
 
-    if (isset($_POST['update_info'])) {
+    if (isset($_POST['btnModifica'])) {
         $new_titolo = mysqli_real_escape_string($db_conn, trim($_POST['titolo']));
         $new_descrizione = mysqli_real_escape_string($db_conn, trim($_POST['descrizione']));
-    
+        
         $query_update = "UPDATE tproposta SET titolo = '$new_titolo', descrizione = '$new_descrizione' WHERE id_proposta = '$id_proposta'";
+    }
+
+    if (isset($_POST['btnElimina']) && !empty($_POST['id_proposta'])) {
+        $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
+        
+        $query_delete = "DELETE FROM tproposta WHERE id_proposta = '$id_proposta'";
+        
+        echo($query_delete);
+        $delete_result = mysqli_query($db_conn, $query_delete);
+        echo($delete_result);
+        if ($delete_result) {
+            $_SESSION['messaggio'] = "Proposta eliminata con successo!";
+        } else {
+            $_SESSION['messaggio'] = "Errore: " . mysqli_error($db_conn);
+        }
+    
+        header("Location: crea_proposta.php");
+        exit();
     }
     
 
-// Query per ottenere tutti i collegi
-$query_collegi = "SELECT * FROM tproposta";
-$result_collegi = mysqli_query($db_conn, $query_collegi);
+    // Query per ottenere tutti i collegi
+    $query_collegi = "SELECT * FROM tproposta";
+    $result_collegi = mysqli_query($db_conn, $query_collegi);
 ?>
 
 <!DOCTYPE html>
@@ -118,9 +145,12 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                                 </form>
                             </td>
                             <td>
-                                <button id="btnElimina" href="proposta_cancellazione.php?id=<?=$id_proposta?>">
-                                    <img src="images/cancellazione.png">
-                                </button>
+                                <form method="post" action="">
+                                    <input type="hidden" name="id_proposta" value="<?= htmlspecialchars($row['id_proposta']) ?>">
+                                    <button type="submit" name="btnElimina" class="btn btn-link">
+                                        <img src="images/cancellazione.png">
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                 <?php
