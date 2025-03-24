@@ -97,10 +97,34 @@
         li {
             list-style-type: none;
         }
+
+        .container{
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
-    <h1>Crea una nuova proposta</h1>
+    <!-- Navbar fissa in cima -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Crea nuova proposta</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="admin.php" class="nav-link text-danger">Home Page</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
     <div class="container">
         <form method="post" action="">
