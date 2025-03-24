@@ -24,7 +24,7 @@
 
     include 'connessione.php';
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if(isset($_POST['btnCreaProposta'])) {
         $titolo = mysqli_real_escape_string($db_conn, $_POST['titolo']);
         $descrizione_proposta = mysqli_real_escape_string($db_conn, $_POST['descrizione_proposta']);
 
@@ -55,24 +55,22 @@
         $query_update = "UPDATE tproposta SET titolo = '$new_titolo', descrizione = '$new_descrizione' WHERE id_proposta = '$id_proposta'";
     }
 
-    if (isset($_POST['btnElimina']) && !empty($_POST['id_proposta'])) {
+    if (isset($_POST['btnElimina'])) {    
         $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
-        
+    
         $query_delete = "DELETE FROM tproposta WHERE id_proposta = '$id_proposta'";
-        
-        echo($query_delete);
+    
         $delete_result = mysqli_query($db_conn, $query_delete);
-        echo($delete_result);
+        
         if ($delete_result) {
             $_SESSION['messaggio'] = "Proposta eliminata con successo!";
         } else {
             $_SESSION['messaggio'] = "Errore: " . mysqli_error($db_conn);
         }
-    
+        
         header("Location: crea_proposta.php");
         exit();
     }
-    
 
     // Query per ottenere tutti i collegi
     $query_collegi = "SELECT * FROM tproposta";
@@ -114,7 +112,7 @@
                 <label for="descrizione_proposta">Descrizione:</label>
                 <input type="text" class="form-control" id="descrizione_proposta" name="descrizione_proposta" required>
             </div>
-            <button type="submit" class="btn btn-primary" name="crea_proposta">Crea Proposta</button>
+            <button type="submit" class="btn btn-primary" name="btnCreaProposta">Crea Proposta</button>
             <a href="admin.php" class="btn btn-primary">Torna indietro</a>
         </form>
         <br><br>
