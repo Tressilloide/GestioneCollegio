@@ -162,7 +162,7 @@
                                 <form method="post" action="proposta_modifica.php">
                                     <input type="hidden" name="id_proposta" value="<?= htmlspecialchars($row['id_proposta']) ?>">
                                     <button type="submit" name="btnModifica" class="btn btn-link">
-                                        <img src="images/modifica.png">
+                                        <img src="images/penna_modifica.png">
                                     </button>
                                 </form>
                             </td>
@@ -170,7 +170,7 @@
                                 <form method="post" action="">
                                     <input type="hidden" name="id_proposta" value="<?= htmlspecialchars($row['id_proposta']) ?>">
                                     <button type="submit" name="btnElimina" class="btn btn-link">
-                                        <img src="images/cancellazione.png">
+                                        <img src="images/eliminazione.png" width="20px" height="20px">
                                     </button>
                                 </form>
                             </td>
