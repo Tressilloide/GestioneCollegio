@@ -2,6 +2,13 @@
     include 'connessione.php';
     session_start();
 
+    if (isset($_POST['logout'])) {
+        session_unset();
+        session_destroy();
+        header("Location: index.php");
+        exit();
+    }
+
     if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
         header("Location: login.php");
         exit();
