@@ -103,6 +103,36 @@
             padding: 20px;
             border-radius: 10px;
             margin-top: 50px;
+            text-justify: auto;
+        }
+
+        table {
+        table-layout: fixed;
+        width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        th:nth-child(1), td:nth-child(1) { /* Colonna Titolo */
+            width: 25%;
+            min-width: 150px;
+            max-width: 300px;
+        }
+
+        th:nth-child(3), td:nth-child(3),  /* Colonna Modifica */
+        th:nth-child(4), td:nth-child(4) { /* Colonna Elimina */
+            width: 7%;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        th:nth-child(2), td:nth-child(2) { /* Colonna Descrizione */
+            width: auto;
         }
     </style>
 </head>
