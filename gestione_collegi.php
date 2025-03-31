@@ -61,12 +61,38 @@ $collegi_result = mysqli_query($db_conn, "SELECT id_collegio, descrizione FROM t
             background-size: 20%;
             height: 100vh;
         }
+
+        .container{
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 50px;
+            text-justify: auto;
+        }
     </style>
 </head>
 
 <body>
+    <!-- Navbar fissa in cima -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Crea un nuovo collegio</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="admin.php" class="nav-link text-danger">Home Page</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="container"><br>
-        <h2>Crea un nuovo collegio</h2>
         <form method="post" action="">
             <div class="form-group">
                 <label for="data_collegio">Data Collegio:</label>
