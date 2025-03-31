@@ -11,44 +11,72 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
     exit();
 }
 
+$message = "";
+$directory = __DIR__ . '/csvDocenti';
+$filename = $directory . '/elenco_docenti.csv'; // Nome fisso per il file CSV
+$csv_data = [];
+
+// Assicurati che la directory esista
+if (!is_dir($directory)) {
+    mkdir($directory, 0777, true);
+}
+
+// Carica il file CSV esistente per la modifica
+if (file_exists($filename)) {
+    if (($handle = fopen($filename, "r")) !== FALSE) {
+        $csv_data = [];
+        $header = fgetcsv($handle); // Leggi la prima riga come intestazione
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            $csv_data[] = $data; // Aggiungi le righe successive come dati
+        }
+        fclose($handle);
+    }
+}
+
+// Salva le modifiche al file CSV
+if (isset($_POST['update_csv'])) {
+    $updated_data = json_decode($_POST['csv_data'], true);
+
+    // Verifica che i dati siano stati decodificati correttamente
+    if (is_array($updated_data)) {
+        $output = fopen($filename, 'w'); // Sovrascrive il file esistente
+        if ($output === false) {
+            http_response_code(500); // Errore interno del server
+            echo "Errore nella creazione del file CSV.";
+            exit();
+        } else {
+            // Scrivi l'intestazione
+            fputcsv($output, $header);
+
+            // Scrivi i dati
+            foreach ($updated_data as $row) {
+                fputcsv($output, $row);
+            }
+            fclose($output);
+            echo "Modifiche salvate con successo nel file CSV.";
+            exit();
+        }
+    } else {
+        http_response_code(400); // Richiesta non valida
+        echo "Errore nella decodifica dei dati inviati.";
+        exit();
+    }
+}
+
+// Carica un nuovo file CSV e sovrascrive quello esistente
+if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
+    if (move_uploaded_file($_FILES['file']['tmp_name'], $filename)) {
+        $message = "Nuovo file CSV caricato con successo.";
+    } else {
+        $message = "Errore durante il caricamento del file.";
+    }
+}
+
 if (isset($_POST['logout'])) {
     session_unset();
     session_destroy();
     header("Location: index.php");
     exit();
-}
-
-if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
-    $file = $_FILES['file']['tmp_name'];
-    $handle = fopen($file, "r");
-    if ($handle !== FALSE) {
-        require 'connessione.php'; // Assicurati di avere un file per la connessione al database
-
-        // Salta l'intestazione del file CSV
-        fgetcsv($handle);
-
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            $nome_completo = mysqli_real_escape_string($db_conn, $data[0]);
-            $email = mysqli_real_escape_string($db_conn, $data[1]);
-
-            // Dividi il nome completo in nome e cognome
-            $nome_parts = explode(' ', $nome_completo, 2);
-            $nome = $nome_parts[0];
-            $cognome = isset($nome_parts[1]) ? $nome_parts[1] : '';
-
-            $password = bin2hex(random_bytes(4)); // Genera una password casuale di 8 caratteri
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-            $query = "INSERT INTO tdocente (nome, cognome, email, user_password) VALUES ('$nome', '$cognome', '$email', '$hashed_password')";
-            mysqli_query($db_conn, $query);
-        }
-        fclose($handle);
-        $message = "Docenti preregistrati con successo.";
-    } else {
-        $message = "Errore nell'apertura del file.";
-    }
-} else {
-    $message = "Errore nel caricamento del file.";
 }
 ?>
 
@@ -57,7 +85,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
 
 <head>
     <meta charset="UTF-8">
-    <title>Pagina Admin</title>
+    <title>Gestisci Docenti</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
@@ -93,13 +121,37 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
         }
 
         .center-box {
-            width: 45%;
+            width: 100%;
             background: white;
             padding: 30px;
             text-align: center;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             color: black;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+        }
+
+        .add-row-btn {
+            margin-top: 10px;
         }
 
         @media (max-width: 768px) {
@@ -144,17 +196,116 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
     </nav>
     <div class="center-container">
         <div class="center-box">
-            <h2>Carica CSV per preregistrare i docenti</h2>
-            <?php if (isset($message)) { echo "<p>$message</p>"; } ?>
+            <h2>Gestisci Docenti</h2>
+            <?php if ($message) { echo "<p class='alert alert-success'>$message</p>"; } ?>
+
+            <!-- Carica un nuovo file CSV -->
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="file">Seleziona file CSV:</label>
-                    <input type="file" name="file" id="file" class="form-control" required>
+                    <label for="file">Carica un nuovo file CSV:</label>
+                    <input type="file" name="file" id="file" class="form-control">
                 </div>
-                <button type="submit" class="btn btn-primary">Carica</button>
+                <button type="submit" class="btn btn-primary">Carica Nuovo CSV</button>
             </form>
+
+            <!-- Tabella per modificare i dati -->
+            <?php if (!empty($csv_data)) { ?>
+                <form id="csvForm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                    <table id="csvTable" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <?php foreach ($header as $col) { echo "<th>$col</th>"; } ?>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($csv_data as $row) { ?>
+                                <tr>
+                                    <?php foreach ($row as $cell) { ?>
+                                        <td><input type="text" value="<?php echo htmlspecialchars($cell); ?>"></td>
+                                    <?php } ?>
+                                    <td><span class="delete-btn" onclick="deleteRow(this)">Elimina</span></td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-success" onclick="updateCSV()">Salva CSV Modificato</button>
+                    <button type="button" class="btn btn-info add-row-btn" onclick="addRow()">Aggiungi Nuova Riga</button>
+                    <input type="hidden" name="csv_data" id="csv_data">
+                </form>
+            <?php } ?>
         </div>
     </div>
+
+    <script>
+        function deleteRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+
+        function addRow() {
+            const table = document.getElementById("csvTable").querySelector("tbody");
+            const headerCount = document.querySelectorAll("#csvTable thead th").length - 1; // Escludi la colonna "Azioni"
+            const newRow = document.createElement("tr");
+
+            for (let i = 0; i < headerCount; i++) {
+                const cell = document.createElement("td");
+                const input = document.createElement("input");
+                input.type = "text";
+                input.value = ""; // Rendi la cella vuota
+                cell.appendChild(input);
+                newRow.appendChild(cell);
+            }
+
+            const actionCell = document.createElement("td");
+            actionCell.innerHTML = '<span class="delete-btn" onclick="deleteRow(this)">Elimina</span>';
+            newRow.appendChild(actionCell);
+
+            table.appendChild(newRow);
+        }
+
+        function updateCSV() {
+            const table = document.querySelector("#csvTable");
+            const rows = table.querySelectorAll("tbody tr");
+            const csvData = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td input");
+                const rowData = [];
+                cells.forEach(cell => rowData.push(cell.value.trim())); // Rimuovi spazi inutili
+                csvData.push(rowData);
+            });
+
+            // Verifica che i dati siano stati raccolti correttamente
+            console.log("Dati raccolti:", csvData);
+
+            // Invia i dati al server tramite una richiesta AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "<?php echo $_SERVER['PHP_SELF']; ?>", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    console.log("Risposta dal server:", xhr.responseText);
+
+                    // Mostra un messaggio di successo
+                    const messageBox = document.createElement("p");
+                    messageBox.className = "alert alert-success";
+                    messageBox.textContent = "Modifiche salvate con successo nel file CSV.";
+                    document.querySelector(".center-box").prepend(messageBox);
+
+                    // Rimuovi il messaggio dopo 3 secondi
+                    setTimeout(() => {
+                        messageBox.remove();
+                    }, 3000);
+                } else {
+                    console.error("Errore durante il salvataggio del file CSV.");
+                }
+            };
+
+            xhr.send("update_csv=1&csv_data=" + encodeURIComponent(JSON.stringify(csvData)));
+        }
+    </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
