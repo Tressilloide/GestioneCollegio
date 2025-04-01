@@ -19,28 +19,29 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
 
 include 'connessione.php';
 
-if (isset($_POST['btnCreaProposta'])) {
-    $data_collegio = mysqli_real_escape_string($db_conn, $_POST['data_collegio']);
-    $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
-    $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
-    $descrizione = mysqli_real_escape_string($db_conn, $_POST['descrizione']);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['crea_collegio'])) {
+        $data_collegio = mysqli_real_escape_string($db_conn, $_POST['data_collegio']);
+        $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
+        $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
+        $descrizione = mysqli_real_escape_string($db_conn, $_POST['descrizione']);
 
-    $query_collegio = "INSERT INTO tcollegiodocenti (data_collegio, ora_inizio, ora_fine, descrizione) 
-                            VALUES ('$data_collegio', '$ora_inizio', '$ora_fine', '$descrizione')";
+        $query_collegio = "INSERT INTO tcollegiodocenti (data_collegio, ora_inizio, ora_fine, descrizione) 
+                               VALUES ('$data_collegio', '$ora_inizio', '$ora_fine', '$descrizione')";
 
-    if (mysqli_query($db_conn, $query_collegio)) {
-        echo "<h2>Collegio creato con successo!</h2>";
-    } else {
-        echo "<h2>Errore nella creazione del collegio: " . mysqli_error($db_conn) . "</h2>";
+        if (mysqli_query($db_conn, $query_collegio)) {
+            echo "<h2>Collegio creato con successo!</h2>";
+        } else {
+            echo "<h2>Errore nella creazione del collegio: " . mysqli_error($db_conn) . "</h2>";
+        }
+        // Redirect per evitare duplicati
+        header("Location: admin.php");
+        exit();
     }
-    // Redirect per evitare duplicati
-    header("Location: gestione_collegi.php");
-    exit();
 }
 
 // Recupera i collegi esistenti per il menu a tendina
-$query_collegi = "SELECT * FROM tcollegiodocenti ORDER BY data_collegio DESC";
-$result_collegi = mysqli_query($db_conn, $query_collegi);
+$collegi_result = mysqli_query($db_conn, "SELECT id_collegio, descrizione FROM tcollegiodocenti");
 ?>
 
 <!DOCTYPE html>
@@ -53,68 +54,64 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
         body {
-            background-image: url('images/admin.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: 20%;
-            height: 100vh;
+            background: #007bff;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 50px; /* Evita che il contenuto finisca sotto la navbar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        li {
-            list-style-type: none;
-        }
-
-        .container{
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 50px;
-            text-justify: auto;
-        }
-
-        table {
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            z-index: 1000;
         }
 
-        
-        th, td {
-            text-align: left;
-            vertical-align: top;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-        
-
-        th:nth-child(1), td:nth-child(1) {  /* Colonna Descrizione */ 
-            width: 55%;
-            min-width: 150px;
-            max-width: 300px;
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70%;
+            padding: 20px;
         }
 
-        th:nth-child(2), td:nth-child(2),   /* Colonna Data */
-        th:nth-child(3), td:nth-child(3),   /* Colonna Ora_inizio */
-        th:nth-child(4), td:nth-child(4) {  /* Colonna Ora_fine */
-            width: 8%;
-            min-width: 50px;
+        .center-box {
+            width: 100%;  /* I box occuperanno tutta la larghezza disponibile */
+            background: white;
+            padding: 30px;
             text-align: center;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            color: black;
+            margin-bottom: 20px;  /* Aggiungi un margine inferiore per separare i box */
         }
 
-        th:nth-child(5), td:nth-child(5),   /* Colonna Conferma */
-        th:nth-child(6), td:nth-child(6),   /* Colonna Modifica */
-        th:nth-child(7), td:nth-child(7) {  /* Colonna Elimina */
-            width: 2%;
-            min-width: 50px;
-            text-align: center;
+
+        @media (max-width: 768px) {
+            .center-container {
+                flex-direction: column;
+                align-items: center;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .center-box {
+                width: 100%;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- Navbar fissa in cima -->
-    <nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
@@ -122,7 +119,7 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Crea un nuovo collegio</a>
+                <a class="navbar-brand" href="#">Crea nuova proposta</a>
             </div>
             <ul class="nav navbar-nav navbar-right">
                 <li>
@@ -132,108 +129,51 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
         </div>
     </nav>
 
-    <div class="container"><br>
-        <form method="post" action="">
-            <div class="form-group">
-                <label for="data_collegio">Data Collegio:</label>
-                <input type="date" class="form-control" id="data_collegio" name="data_collegio" required>
-            </div>
-            <div class="form-group">
-                <label for="ora_inizio">Ora Inizio:</label>
-                <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" required>
-            </div>
-            <div class="form-group">
-                <label for="ora_fine">Ora Fine:</label>
-                <input type="time" class="form-control" id="ora_fine" name="ora_fine" required>
-            </div>
-            <div class="form-group">
-                <label for="descrizione">Descrizione:</label>
-                <input type="text" class="form-control" id="descrizione" name="descrizione" required>
-            </div>
-            <button type="submit" class="btn btn-primary" name="btnCreaProposta">Crea collegio</button>
-        </form>
-        <br><br><br>
+    <div class="center-container">
+        <div class="center-box">
+        <h2>Crea un nuovo collegio</h2>
+            <form method="post" action="">
+                <div class="form-group">
+                    <label for="data_collegio">Data Collegio:</label>
+                    <input type="date" class="form-control" id="data_collegio" name="data_collegio" required>
+                </div>
+                <div class="form-group">
+                    <label for="ora_inizio">Ora Inizio:</label>
+                    <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" required>
+                </div>
+                <div class="form-group">
+                    <label for="ora_fine">Ora Fine:</label>
+                    <input type="time" class="form-control" id="ora_fine" name="ora_fine" required>
+                </div>
+                <div class="form-group">
+                    <label for="descrizione">Descrizione:</label>
+                    <input type="text" class="form-control" id="descrizione" name="descrizione" required>
+                </div>
+                <button type="submit" class="btn btn-primary" name="crea_collegio">Crea Collegio</button>
+            </form>
+        </div>
 
-
-        <h2>Seleziona un collegio</h2>
-        <h3>Collegi:</h3>
-        <table class="table table-bordered">
-            <tr>
-                <th>Descrizione</th>
-                <th>Data</th>
-                <th>Ora inizio</th>
-                <th>Ora fine</th>
-                <th>Seleziona</th>
-                <th>Modifica</th>
-                <th>Elimina</th>
-            </tr>
-            <tr>
-                <?php
-                if ($result_collegi && mysqli_num_rows($result_collegi) > 0) {
-                    while ($row = mysqli_fetch_assoc($result_collegi)) {
-                ?>
-                        <tr>
-                            <li>
-                            <td><?= htmlspecialchars($row['descrizione'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                            <td><?= htmlspecialchars($row['data_collegio'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                            <td><?= htmlspecialchars($row['ora_inizio'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                            <td><?= htmlspecialchars($row['ora_fine'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                            </li>
-                            <td>
-                                <form method="post" action="crea_votazione.php">
-                                    <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                    <button type="submit" name="btnModifica" class="btn btn-link">
-                                        <img src="images/conferma.png">
-                                    </button>
-                                </form>
-                            </td>
-                            <td>
-                                <form method="post" action="modifica_collegio.php">
-                                    <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                    <button type="submit" name="btnModifica" class="btn btn-link">
-                                        <img src="images/penna_modifica.png">
-                                    </button>
-                                </form>
-                            </td>
-                            <td>
-                                <form method="post" action="">
-                                    <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                    <button type="submit" name="btnElimina" class="btn btn-link">
-                                        <img src="images/eliminazione.png" width="20px" height="20px">
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                <?php
+        <div class="center-box">
+            <h2>Seleziona un collegio esistente</h2>
+            <form method="get" action="crea_votazione.php">
+                <div class="form-group">
+                    <label for="id_collegio">Collegio:</label>
+                    <select class="form-control" id="id_collegio" name="id_collegio" required>
+                        <?php
+                        if ($collegi_result && mysqli_num_rows($collegi_result) > 0) {
+                            while ($row = mysqli_fetch_assoc($collegi_result)) {
+                                echo "<option value='" . $row['id_collegio'] . "'>" . htmlspecialchars($row['descrizione']) . "</option>";
+                            }
+                        } else {
+                            echo "<option value=''>Nessun collegio disponibile</option>";
                         }
-                    } else {
-                ?>
-                    <td colspan='7'>
-                        <li>Nessuna proposta trovata</li>
-                    </td>
-                <?php
-                    }
-                ?>
-            </tr>
-        </table>
-        <!-- <h2>Seleziona un collegio esistente</h2>
-        <form method="get" action="crea_votazione.php">
-            <div class="form-group">
-                <label for="id_collegio">Collegio:</label>
-                <select class="form-control" id="id_collegio" name="id_collegio" required>
-                    <?php
-                    if ($collegi_result && mysqli_num_rows($collegi_result) > 0) {
-                        while ($row = mysqli_fetch_assoc($collegi_result)) {
-                            echo "<option value='" . $row['id_collegio'] . "'>" . htmlspecialchars($row['descrizione']) . "</option>";
-                        }
-                    } else {
-                        echo "<option value=''>Nessun collegio disponibile</option>";
-                    }
-                    ?>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Seleziona Collegio</button>
-        </form> -->
+                        ?>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Seleziona Collegio</button>
+                <a href="admin.php" class="btn btn-primary">Torna indietro</a>
+            </form>
+        </div>
     </div>
 </body>
 
