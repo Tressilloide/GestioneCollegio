@@ -16,6 +16,19 @@
     include 'connessione.php';
 
     $docenti_non_trovati = [];
+    
+    $id_collegio = mysqli_real_escape_string($db_conn, $_GET['id_collegio']);
+    $query_orari = "SELECT ora_inizio, ora_fine FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'";
+    $result_orari = mysqli_query($db_conn, $query_orari);
+
+    if ($result_orari && mysqli_num_rows($result_orari) > 0) {
+        $row_orari = mysqli_fetch_assoc($result_orari);
+        $ora_inizio_collegio = $row_orari['ora_inizio'];
+        $ora_fine_collegio = $row_orari['ora_fine'];
+    } else {
+        $ora_inizio_collegio = "Orario non trovato";
+        $ora_fine_collegio = "Orario non trovato";
+    }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $descrizione_votazione = mysqli_real_escape_string($db_conn, $_POST['descrizione_votazione']);
@@ -24,10 +37,23 @@
         $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
         $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
 
+        
+
         //OTP di 3 cifre
         $otp = rand(100, 999);
 
-        $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio, otp) 
+        $ora1 = new DateTime($ora_inizio_collegio);
+        $ora2 = new DateTime($ora_inizio);
+        $ora3 = new DateTime($ora_fine_collegio);
+        $ora4 = new DateTime($ora_fine);
+
+        if ($ora1 > $ora2 || $ora2 > $ora3) {
+            echo "<script>alert('L\'orario inserito non è valido.');</script>";
+        } else {
+            if ($ora3 < $ora4){
+                echo 'L\'orario inserito non è valido';
+            } else{
+                $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio, otp) 
                             VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta', '$id_collegio', '$otp')";
 
         if (mysqli_query($db_conn, $query_votazione)) {
@@ -67,6 +93,10 @@
         } else {
             ?><h2>Errore nella creazione della votazione: </h2><?php
         }
+            }
+        }
+
+        
     }
 
     $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tproposta");
@@ -93,19 +123,83 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <style>
         body {
-            background-image: url('images/admin.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: 20%;
-            height: 100vh; 
+            background: #007bff;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 50px; /* Evita che il contenuto finisca sotto la navbar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70%;
+            padding: 20px;
+        }
+
+        .center-box {
+            width: 100%;  /* I box occuperanno tutta la larghezza disponibile */
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            color: black;
+            margin-bottom: 20px;  /* Aggiungi un margine inferiore per separare i box */
+        }
+
+
+        @media (max-width: 768px) {
+            .center-container {
+                flex-direction: column;
+                align-items: center;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .center-box {
+                width: 100%;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Crea una nuova votazione</h1>
 
-    <div class="container">
+<nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Crea nuova votazione</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="admin.php" class="nav-link text-danger">Home Page</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+<div class="center-container">
+        <div class="center-box">
         <?php //necessario quando si vuole caricare file . ?>
         <form method="post" action="" enctype="multipart/form-data">
             <div class="form-group">
@@ -114,11 +208,11 @@
             </div>
             <div class="form-group">
                 <label for="ora_inizio">Ora Inizio:</label>
-                <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" required>
+                <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" value="<?= htmlspecialchars($ora_inizio_collegio, ENT_QUOTES, 'UTF-8') ?>" required>
             </div>
             <div class="form-group">
                 <label for="ora_fine">Ora Fine:</label>
-                <input type="time" class="form-control" id="ora_fine" name="ora_fine" required>
+                <input type="time" class="form-control" id="ora_fine" name="ora_fine" value="<?= htmlspecialchars($ora_fine_collegio, ENT_QUOTES, 'UTF-8') ?>" required>
             </div>
             <div class="form-group">
                 <label for="id_proposta">Proposta:</label>
