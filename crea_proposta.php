@@ -86,24 +86,62 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <style>
         body {
-            background-image: url('images/admin.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: 20%;
-            height: 100vh; 
+            background: #007bff;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 50px; /* Evita che il contenuto finisca sotto la navbar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70%;
+            padding: 20px;
+        }
+
+        .center-box {
+            width: 100%;  /* I box occuperanno tutta la larghezza disponibile */
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            color: black;
+            margin-bottom: 20px;  /* Aggiungi un margine inferiore per separare i box */
+        }
+
+
+        @media (max-width: 768px) {
+            .center-container {
+                flex-direction: column;
+                align-items: center;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .center-box {
+                width: 100%;
+                margin-bottom: 20px;
+            }
         }
 
         li {
             list-style-type: none;
-        }
-
-        .container{
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 50px;
-            text-justify: auto;
         }
 
         table {
@@ -138,7 +176,7 @@
 </head>
 <body>
     <!-- Navbar fissa in cima -->
-        <nav class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
@@ -156,20 +194,22 @@
         </div>
     </nav>
 
-    <div class="container">
-        <form method="post" action="">
-            <div class="form-group">
-                <label for="titolo">Titolo:</label>
-                <input type="text" class="form-control" id="titolo" name="titolo" required>
-            </div>
-            <div class="form-group">
-                <label for="descrizione_proposta">Descrizione:</label>
-                <input type="text" class="form-control" id="descrizione_proposta" name="descrizione_proposta" required>
-            </div>
-            <button type="submit" class="btn btn-primary" name="btnCreaProposta">Crea Proposta</button>
-            <a href="admin.php" class="btn btn-primary">Torna indietro</a>
-        </form>
-        <br><br>
+    <div class="center-container">
+        <div class="center-box">
+            <form method="post" action="">
+                <div class="form-group">
+                    <label for="titolo">Titolo:</label>
+                    <input type="text" class="form-control" id="titolo" name="titolo" required>
+                </div>
+                <div class="form-group">
+                    <label for="descrizione_proposta">Descrizione:</label>
+                    <input type="text" class="form-control" id="descrizione_proposta" name="descrizione_proposta" required>
+                </div>
+                <button type="submit" class="btn btn-primary" name="btnCreaProposta">Crea Proposta</button>
+            </form>
+        </div>
+
+        <div class="center-box">
         <h2>Proposte create</h2>
         <table class="table table-bordered">
             <tr>
@@ -217,9 +257,11 @@
                 ?>
             </tr>
         </table>
+        </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
 </body>
 </html>
