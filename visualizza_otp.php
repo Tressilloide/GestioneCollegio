@@ -44,23 +44,47 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <style>
         body {
-            background-image: url('images/admin.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: 20%;
-            height: 100vh; 
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #000;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 255, 0.3);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1, h2, h3, p {
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #007bff;
+        }
+        .btn-primary {
+            background-color: #344ceb;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            background-color: #2a3b9d;
         }
     </style>
 </head>
 <body>
-    <h1>OTP Generato</h1>
-
     <div class="container">
+        <h1>OTP Generato</h1>
         <h2>Il tuo OTP è: <?php echo htmlspecialchars($otp); ?></h2>
         <h3>Proposta Votata:</h3>
         <p><strong>Titolo:</strong> <?php echo htmlspecialchars($proposta_titolo); ?></p>
         <p><strong>Descrizione:</strong> <?php echo htmlspecialchars($proposta_descrizione); ?></p>
+        <a href="crea_votazione.php" class="btn btn-primary">Indietro</a>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
