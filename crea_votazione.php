@@ -13,17 +13,22 @@
         exit();
     }
 
+    if (isset($_GET['id_collegio'])) {
+        $id_collegio = $_GET['id_collegio'];
+        $descrizione_collegio = urldecode($_GET['descrizione']);
+        $data_collegio = $_GET['data_collegio'];
+        $ora_inizio = $_GET['ora_inizio'];
+        $ora_fine = $_GET['ora_fine'];
+    } else {
+        echo "<h2>Errore: Nessun collegio selezionato.</h2>";
+        exit();
+    }
+
     include 'connessione.php';
 
     $docenti_non_trovati = [];
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $descrizione_votazione = mysqli_real_escape_string($db_conn, $_POST['descrizione_votazione']);
-        $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
-        $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
-        $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
-        $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
-
+    if (isset($_POST['crea_votazione'])) {
         //OTP di 3 cifre
         $otp = rand(100, 999);
 

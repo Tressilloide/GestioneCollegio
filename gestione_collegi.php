@@ -55,6 +55,28 @@ if (isset($_POST['btnElimina'])) {
     exit();
 }
 
+if (isset($_POST['btnConferma'])) {
+    $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
+
+    $query_collegio = "SELECT * FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'";
+    $result_collegio = mysqli_query($db_conn, $query_collegio);
+
+    if ($result_collegio && mysqli_num_rows($result_collegio) > 0) {
+        $collegio = mysqli_fetch_assoc($result_collegio);
+
+        $id_collegio = $collegio['id_collegio'];
+        $descrizione = urlencode($collegio['descrizione']);
+        $data_collegio = $collegio['data_collegio'];
+        $ora_inizio = $collegio['ora_inizio'];
+        $ora_fine = $collegio['ora_fine'];
+
+        header("Location: crea_votazione.php?id_collegio=$id_collegio&descrizione=$descrizione&data_collegio=$data_collegio&ora_inizio=$ora_inizio&ora_fine=$ora_fine");
+        exit();
+    } else {
+        echo "<h2>Errore: Collegio non trovato.</h2>";
+    }
+}
+
 // Recupera i collegi esistenti per il menu a tendina
 $query_collegi = "SELECT * FROM tcollegiodocenti ORDER BY data_collegio DESC";
 $result_collegi = mysqli_query($db_conn, $query_collegi);
