@@ -38,6 +38,23 @@ if (isset($_POST['btnCreaProposta'])) {
     exit();
 }
 
+if (isset($_POST['btnElimina'])) {    
+    $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
+
+    $query_delete = "DELETE FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'";
+
+    $delete_result = mysqli_query($db_conn, $query_delete);
+    
+    if ($delete_result) {
+        $_SESSION['messaggio'] = "Proposta eliminata con successo!";
+    } else {
+        $_SESSION['messaggio'] = "Errore: " . mysqli_error($db_conn);
+    }
+    
+    header("Location: gestione_collegi.php");
+    exit();
+}
+
 // Recupera i collegi esistenti per il menu a tendina
 $query_collegi = "SELECT * FROM tcollegiodocenti ORDER BY data_collegio DESC";
 $result_collegi = mysqli_query($db_conn, $query_collegi);
@@ -182,7 +199,7 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                             <td>
                                 <form method="post" action="crea_votazione.php">
                                     <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                    <button type="submit" name="btnModifica" class="btn btn-link">
+                                    <button type="submit" name="btnConferma" class="btn btn-link">
                                         <img src="images/conferma.png">
                                     </button>
                                 </form>
@@ -216,24 +233,6 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                 ?>
             </tr>
         </table>
-        <!-- <h2>Seleziona un collegio esistente</h2>
-        <form method="get" action="crea_votazione.php">
-            <div class="form-group">
-                <label for="id_collegio">Collegio:</label>
-                <select class="form-control" id="id_collegio" name="id_collegio" required>
-                    <?php
-                    if ($collegi_result && mysqli_num_rows($collegi_result) > 0) {
-                        while ($row = mysqli_fetch_assoc($collegi_result)) {
-                            echo "<option value='" . $row['id_collegio'] . "'>" . htmlspecialchars($row['descrizione']) . "</option>";
-                        }
-                    } else {
-                        echo "<option value=''>Nessun collegio disponibile</option>";
-                    }
-                    ?>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Seleziona Collegio</button>
-        </form> -->
     </div>
 </body>
 
