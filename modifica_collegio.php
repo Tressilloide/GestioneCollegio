@@ -100,7 +100,7 @@
 
                     if (mysqli_query($db_conn, $query_update)) {
                         echo "Collegio modificato con successo!";
-                        header("refresh:3; crea_proposta.php");
+                        header("refresh:3; gestione_collegi.php");
                         exit();
                     } else {
                         echo "Errore nella modifica del collegio";
