@@ -56,7 +56,7 @@ CREATE TABLE partecipa(
 CREATE TABLE effettua(
     id_docente                  BIGINT              NOT NULL,
     id_votazione                BIGINT              NOT NULL,
-    voto                        INT                 NOT NULL, --Ma fare con Bit e togliere not null? (0 contro, 1 pro, null astenuto)
+    voto                        INT                 NOT NULL, 
     ora                         TIME                NOT NULL,
     PRIMARY KEY(id_docente, id_votazione),
     FOREIGN KEY(id_docente) REFERENCES tdocente(id_docente),
