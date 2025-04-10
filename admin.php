@@ -129,7 +129,8 @@
             <h2>Gestione</h2>
             <a href="crea_proposta.php" class="btn btn-primary">Gestione proposte</a><br><br>
             <a href="gestione_collegi.php" class="btn btn-primary">Gestione collegi</a>
-            <a href="gestisci_docenti.php" class="btn btn-primary">Gestisci docenti</a>
+            <a href="gestisci_docenti.php" class="btn btn-primary">Gestisci docenti</a><br><br>
+            <a href="risultati_votazioni.php" class="btn btn-primary">Visualizza risultati votazioni</a>
         </div>
     </div>
 
