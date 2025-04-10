@@ -1,5 +1,10 @@
 <?php
     session_start();
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_collegio'])) {
+        $_SESSION['id_collegio'] = $_POST['id_collegio'];
+    }
+
+    $id_collegio = $_SESSION['id_collegio'] ?? null;
 
     if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
         ?> <h1>Non sei loggato, corri a loggarti.</h1> <?php
@@ -13,18 +18,12 @@
         exit();
     }
 
-    if (isset($_GET['id_collegio'])) {
-        $id_collegio = $_GET['id_collegio'];
-        $descrizione_collegio = urldecode($_GET['descrizione']);
-        $data_collegio = $_GET['data_collegio'];
-        $ora_inizio = $_GET['ora_inizio'];
-        $ora_fine = $_GET['ora_fine'];
-    } else {
-        echo "<h2>Errore: Nessun collegio selezionato.</h2>";
-        exit();
-    }
-
     include 'connessione.php';
+
+    // query per ottenere i dettagli della proposta
+    $query = "SELECT data_collegio, ora_inizio, ora_fine, descrizione FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'";
+    $result = mysqli_query($db_conn, $query);
+    $proposta = mysqli_fetch_assoc($result);
 
     $docenti_non_trovati = [];
 
@@ -33,7 +32,7 @@
         $otp = rand(100, 999);
 
         $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio, otp) 
-                            VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta', '$id_collegio', '$otp')";
+                            VALUES ('$descrizione_votazione', '$ora_inizio_votazione', '$ora_fine_votazione', '$id_proposta', '$id_collegio', '$otp')";
 
         if (mysqli_query($db_conn, $query_votazione)) {
             $id_votazione = mysqli_insert_id($db_conn);
@@ -111,19 +110,44 @@
     <h1>Crea una nuova votazione</h1>
 
     <div class="container">
-        <?php //necessario quando si vuole caricare file . ?>
+        <h3>
+            <?php 
+                if(isset($_POST['update_info'])) {
+                    $new_data_collegio = mysqli_real_escape_string($db_conn, trim($_POST['data_collegio']));
+                    $new_ora_inizio = mysqli_real_escape_string($db_conn, trim($_POST['ora_inizio']));
+                    $new_ora_fine = mysqli_real_escape_string($db_conn, trim($_POST['ora_fine']));
+                    $new_descrizione = mysqli_real_escape_string($db_conn, trim($_POST['descrizione']));
+
+                    $query_update = "UPDATE tcollegiodocenti SET data_collegio = '$new_data_collegio', ora_inizio = '$new_ora_inizio', ora_fine = '$new_ora_fine', descrizione = '$new_descrizione' WHERE id_collegio = '$id_collegio'";
+
+                    if (mysqli_query($db_conn, $query_update)) {
+                        echo "Collegio modificato con successo!";
+                        header("refresh:3; gestione_collegi.php");
+                        exit();
+                    } else {
+                        echo "Errore nella modifica del collegio";
+                        header("refresh:3; gestione_collegi.php");
+                        exit();
+                    }
+                }
+            ?>
+        </h3>
         <form method="post" action="" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="data_collegio">Data collegio:</label>
+                <input type="text" class="form-control" id="data_collegio" name="data_collegio" value="<?= htmlspecialchars($proposta['data_collegio']) ?>" disabled>
+            </div>
+            <div class="form-group">
+                <label for="ora_inizio_votazione">Ora Inizio:</label>
+                <input type="time" class="form-control" id="ora_inizio_votazione" name="ora_inizio_votazione" required>
+            </div>
+            <div class="form-group">
+                <label for="ora_fine_votazione">Ora Fine:</label>
+                <input type="time" class="form-control" id="ora_fine_votazione" name="ora_fine_votazione" required>
+            </div>
             <div class="form-group">
                 <label for="descrizione_votazione">Descrizione:</label>
                 <input type="text" class="form-control" id="descrizione_votazione" name="descrizione_votazione" required>
-            </div>
-            <div class="form-group">
-                <label for="ora_inizio">Ora Inizio:</label>
-                <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" required>
-            </div>
-            <div class="form-group">
-                <label for="ora_fine">Ora Fine:</label>
-                <input type="time" class="form-control" id="ora_fine" name="ora_fine" required>
             </div>
             <div class="form-group">
                 <label for="id_proposta">Proposta:</label>
@@ -141,7 +165,7 @@
             </div>
             <div class="form-group">
                 <label for="collegio_titolo">Collegio:</label>
-                <input type="text" class="form-control" id="collegio_titolo" name="collegio_titolo" value="<?php echo htmlspecialchars($collegio_titolo); ?>" readonly>
+                <input type="text" class="form-control" id="collegio_titolo" name="collegio_titolo" value='<?= htmlspecialchars($proposta['descrizione']) ?>' disabled>
                 <input type="hidden" name="id_collegio" value="<?php echo htmlspecialchars($id_collegio);//passo id collegio  ?>">
             </div>
             <div class="form-group">
