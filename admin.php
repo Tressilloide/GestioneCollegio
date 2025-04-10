@@ -118,7 +118,7 @@
             $result_docenti = mysqli_query($db_conn, $query_docenti);
             if ($result_docenti) {
                 $row_docenti = mysqli_fetch_assoc($result_docenti);
-                echo "<h3>Numero docenti registrati: " . $row_docenti['num_docenti'] . "</h3>";
+                echo "<h3>Numero docenti registrati: " . $row_docenti['num_docenti'] - 1 . "</h3>";
             } else {
                 echo "<h3>Errore nel recupero dati.</h3>";
             }
