@@ -46,6 +46,13 @@ if (file_exists($filename)) {
 }
 
 if (isset($_POST['crea_votazione'])) {
+    // Recupera i dati dal form
+    $descrizione_votazione = mysqli_real_escape_string($db_conn, $_POST['descrizione_votazione']);
+    $ora_inizio_votazione = mysqli_real_escape_string($db_conn, $_POST['ora_inizio_votazione']);
+    $ora_fine_votazione = mysqli_real_escape_string($db_conn, $_POST['ora_fine_votazione']);
+    $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
+    $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']); // Assicurati che sia passato correttamente
+    
     //OTP di 3 cifre
     $otp = rand(100, 999);
 
@@ -136,8 +143,6 @@ if ($id_collegio) {
                     $new_ora_fine = mysqli_real_escape_string($db_conn, trim($_POST['ora_fine']));
                     $new_descrizione = mysqli_real_escape_string($db_conn, trim($_POST['descrizione']));
 
-                    $query_update = "UPDATE tcollegiodocenti SET data_collegio = '$new_data_collegio', ora_inizio = '$new_ora_inizio', ora_fine = '$new_ora_fine', descrizione = '$new_descrizione' WHERE id_collegio = '$id_collegio'";
-
                     if (mysqli_query($db_conn, $query_update)) {
                         echo "Collegio modificato con successo!";
                         header("refresh:3; gestione_collegi.php");
@@ -184,7 +189,7 @@ if ($id_collegio) {
             <div class="form-group">
                 <label for="collegio_titolo">Collegio:</label>
                 <input type="text" class="form-control" id="collegio_titolo" name="collegio_titolo" value="<?php echo htmlspecialchars($proposta['descrizione']); ?>" disabled>
-                <input type="hidden" name="id_collegio" value="<?php echo htmlspecialchars($id_collegio); ?>">
+                <input type="hidden" name="id_collegio" value="<?php htmlspecialchars($proposta['id_collegio']); ?>">
             </div>
             <button type="submit" class="btn btn-primary" name="crea_votazione">Crea Votazione</button>
         </form>
