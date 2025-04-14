@@ -1,42 +1,48 @@
 <?php
-    session_start();
+session_start();
 
-    if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
-        ?> <h1>Non sei loggato, corri a loggarti.</h1> <?php
-        header("refresh:2; index.php");
-        exit();
+if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
+    echo "<h1>Non sei loggato, corri a loggarti.</h1>";
+    header("refresh:2; index.php");
+    exit();
+}
+
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    echo "<h1>Non sei autorizzato ad accedere a questa pagina.</h1>";
+    header("refresh:2; index.php");
+    exit();
+}
+
+include 'connessione.php';
+
+// Recupera OTP e ID della votazione dalla sessione
+if (!isset($_SESSION['otp']) || !isset($_SESSION['id_votazione'])) {
+    echo "<h2>Informazioni sulla votazione mancanti.</h2>";
+    header("refresh:2; crea_votazione.php");
+    exit();
+}
+
+$otp = $_SESSION['otp'];
+$id_votazione = $_SESSION['id_votazione'];
+
+// Recupera i dettagli della proposta associata alla votazione
+$proposta_titolo = '';
+$proposta_descrizione = '';
+if ($id_votazione) {
+    $votazione_result = mysqli_query($db_conn, "SELECT tproposta.titolo, tproposta.descrizione 
+                                                 FROM tvotazione 
+                                                 JOIN tproposta ON tvotazione.id_proposta = tproposta.id_proposta 
+                                                 WHERE tvotazione.id_votazione = '$id_votazione'");
+    if ($votazione_result && mysqli_num_rows($votazione_result) > 0) {
+        $votazione_row = mysqli_fetch_assoc($votazione_result);
+        $proposta_titolo = $votazione_row['titolo'];
+        $proposta_descrizione = $votazione_row['descrizione'];
     }
-
-    if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-        ?> <h1>Non sei autorizzato ad accedere a questa pagina.</h1> <?php
-        header("refresh:2; index.php");
-        exit();
-    }
-
-    include 'connessione.php';
-
-    //OTP e l'ID della votazione dalla URL
-    $otp = isset($_GET['otp']) ? $_GET['otp'] : '';
-    $id_votazione = isset($_GET['id_votazione']) ? $_GET['id_votazione'] : '';
-
-    //proposta
-    $proposta_titolo = '';
-    $proposta_descrizione = '';
-    if ($id_votazione) {
-        $votazione_result = mysqli_query($db_conn, "SELECT tproposta.titolo, tproposta.descrizione 
-                                                    FROM tvotazione 
-                                                    JOIN tproposta ON tvotazione.id_proposta = tproposta.id_proposta 
-                                                    WHERE tvotazione.id_votazione = '$id_votazione'");
-        if ($votazione_result && mysqli_num_rows($votazione_result) > 0) {
-            $votazione_row = mysqli_fetch_assoc($votazione_result);
-            $proposta_titolo = $votazione_row['titolo'];
-            $proposta_descrizione = $votazione_row['descrizione'];
-        }
-    }
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
   <title>Visualizza OTP</title>
   <meta charset="utf-8">
