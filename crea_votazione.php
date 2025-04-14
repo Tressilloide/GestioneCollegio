@@ -28,7 +28,18 @@ $id_collegio = $collegio['id_collegio'];
 // Recupera i dettagli aggiornati del collegio dal database
 $query = "SELECT id_collegio, data_collegio, ora_inizio, ora_fine, descrizione FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'";
 $result = mysqli_query($db_conn, $query);
-$proposta = mysqli_fetch_assoc($result);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+
+    $ora_inizio = $row['ora_inizio'];
+    $ora_fine = $row['ora_fine'];
+
+    // Usa le variabili qui
+} else {
+    echo "Errore: nessun collegio trovato con ID $id_collegio";
+}
+
 
 // Gestione del caricamento del CSV e della creazione della votazione
 $docenti_non_trovati = [];
@@ -51,6 +62,16 @@ if (isset($_POST['crea_votazione'])) {
     $ora_fine_votazione = mysqli_real_escape_string($db_conn, $_POST['ora_fine_votazione']);
     $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
     
+    $ora1 = new DateTime($ora_inizio);
+    $ora2 = new DateTime($ora_inizio_votazione);
+    $ora3 = new DateTime($ora_fine);
+    $ora4 = new DateTime($ora_fine_votazione);
+
+    if ($ora1 > $ora2 || $ora2 > $ora3) {
+        echo "<script>alert('L\'orario inserito non è valido.');</script>";
+    }else{ 
+
+
     // OTP a 3 cifre
     $otp = rand(100, 999);
     
@@ -94,6 +115,7 @@ if (isset($_POST['crea_votazione'])) {
     } else {
         echo "<h2>Errore nella creazione della votazione: " . mysqli_error($db_conn) . "</h2>";
     }
+}
 }
 
 $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tproposta");
