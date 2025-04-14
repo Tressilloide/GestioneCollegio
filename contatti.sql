@@ -20,6 +20,7 @@ CREATE TABLE tcollegiodocenti(
     ora_inizio                  TIME                NOT NULL,
     ora_fine                    TIME                NOT NULL,
     descrizione                 VARCHAR(255)        NOT NULL,
+    otp                         INT                 NOT NULL,
     PRIMARY KEY(id_collegio)
 ) ENGINE = InnoDB;
 
