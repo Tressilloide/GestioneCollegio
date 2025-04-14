@@ -20,9 +20,12 @@ if (isset($_POST['btnCreaProposta'])) {
     $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
     $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
     $descrizione = mysqli_real_escape_string($db_conn, $_POST['descrizione']);
+    
+    // Genera un OTP di 3 cifre
+    $otp = rand(100, 999);
 
-    $query_collegio = "INSERT INTO tcollegiodocenti (data_collegio, ora_inizio, ora_fine, descrizione) 
-                       VALUES ('$data_collegio', '$ora_inizio', '$ora_fine', '$descrizione')";
+    $query_collegio = "INSERT INTO tcollegiodocenti (data_collegio, ora_inizio, ora_fine, descrizione, otp) 
+                       VALUES ('$data_collegio', '$ora_inizio', '$ora_fine', '$descrizione', '$otp')";
 
     if (mysqli_query($db_conn, $query_collegio)) {
         echo "<h2>Collegio creato con successo!</h2>";
@@ -128,7 +131,8 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
         }
         th:nth-child(5), td:nth-child(5),
         th:nth-child(6), td:nth-child(6),
-        th:nth-child(7), td:nth-child(7) {
+        th:nth-child(7), td:nth-child(7),
+        th:nth-child(8), td:nth-child(8) {
             width: 2%;
             min-width: 50px;
             text-align: center;
@@ -184,6 +188,7 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                 <th>Seleziona</th>
                 <th>Modifica</th>
                 <th>Elimina</th>
+                <th>Visualizza OTP</th>
             </tr>
             <?php
             if ($result_collegi && mysqli_num_rows($result_collegi) > 0) {
@@ -219,13 +224,21 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                                 </button>
                             </form>
                         </td>
+                        <td>
+                            <form method="post" action="otp_collegio.php">
+                                <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
+                                <button type="submit" class="btn btn-link">
+                                    <img src="images/otp.png" alt="Visualizza OTP" width="20px" height="20px">
+                                </button>
+                            </form>
+                        </td>
                     </tr>
             <?php
                 }
             } else {
             ?>
                 <tr>
-                    <td colspan="7">Nessuna proposta trovata</td>
+                    <td colspan="8">Nessuna proposta trovata</td>
                 </tr>
             <?php
             }
