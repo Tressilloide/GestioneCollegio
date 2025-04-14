@@ -2,72 +2,84 @@
 session_start();
 
 if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true) {
-    ?> <h1>Non sei loggato, corri a loggarti.</h1> <?php
+    echo "<h1>Non sei loggato, corri a loggarti.</h1>";
     header("refresh:2; index.php");
     exit();
 }
 
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-    ?> <h1>Non sei autorizzato ad accedere a questa pagina.</h1> <?php
+    echo "<h1>Non sei autorizzato ad accedere a questa pagina.</h1>";
     header("refresh:2; index.php");
     exit();
 }
 
 include 'connessione.php';
 
+// Recupera i dati del collegio dalla sessione
+if (!isset($_SESSION['collegio'])) {
+    echo "<h2>Nessun collegio selezionato.</h2>";
+    header("refresh:2; gestione_collegi.php");
+    exit();
+}
+
+$collegio = $_SESSION['collegio'];
+$id_collegio = $collegio['id_collegio'];
+
+// Recupera i dettagli aggiornati del collegio dal database
+$query = "SELECT id_collegio, data_collegio, ora_inizio, ora_fine, descrizione FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'";
+$result = mysqli_query($db_conn, $query);
+$proposta = mysqli_fetch_assoc($result);
+
+// Gestione del caricamento del CSV e della creazione della votazione
 $docenti_non_trovati = [];
 $directory = __DIR__ . '/csvDocenti';
-$filename = $directory . '/elenco_docenti.csv'; // Nome fisso per il file CSV
-$csv_table_data = []; // Array per memorizzare i dati del CSV
+$filename = $directory . '/elenco_docenti.csv';
+$csv_table_data = [];
 
-// Leggi il file CSV fisso
 if (file_exists($filename)) {
     $file = fopen($filename, 'r');
-
-    // Leggi l'intestazione del file CSV
     $csv_header = fgetcsv($file);
-
-    // Leggi i dati del file CSV
     while (($line = fgetcsv($file)) !== FALSE) {
         $csv_table_data[] = $line;
     }
-
     fclose($file);
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if (isset($_POST['crea_votazione'])) {
     $descrizione_votazione = mysqli_real_escape_string($db_conn, $_POST['descrizione_votazione']);
-    $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
-    $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
+    $ora_inizio_votazione = mysqli_real_escape_string($db_conn, $_POST['ora_inizio_votazione']);
+    $ora_fine_votazione = mysqli_real_escape_string($db_conn, $_POST['ora_fine_votazione']);
     $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
-    $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
-
-    // OTP di 3 cifre
+    
+    // OTP a 3 cifre
     $otp = rand(100, 999);
-
+    
     $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio, otp) 
-                        VALUES ('$descrizione_votazione', '$ora_inizio', '$ora_fine', '$id_proposta', '$id_collegio', '$otp')";
+                          VALUES ('$descrizione_votazione', '$ora_inizio_votazione', '$ora_fine_votazione', '$id_proposta', '$id_collegio', '$otp')";
+
+    if (empty($id_collegio)) {
+        header("refresh:2; gestione_collegi.php");
+        exit();
+    }
 
     if (mysqli_query($db_conn, $query_votazione)) {
         $id_votazione = mysqli_insert_id($db_conn);
 
-        // Leggi il file CSV fisso
-        if (file_exists($filename)) {
-            $file = fopen($filename, 'r');
-
-            // Salta l'intestazione del file CSV
-            fgetcsv($file);
-
+        // Salvataggio OTP e ID della votazione
+        $_SESSION['otp'] = $otp;
+        $_SESSION['id_votazione'] = $id_votazione;
+        
+        // Gestione del caricamento file CSV per abilitare i docenti alla votazione
+        if (isset($_FILES['file_csv']) && $_FILES['file_csv']['error'] == 0) {
+            $file_tmp = $_FILES['file_csv']['tmp_name'];
+            $file = fopen($file_tmp, 'r');
+            fgetcsv($file); // salta l'intestazione
             while (($line = fgetcsv($file)) !== FALSE) {
                 $email_docente = mysqli_real_escape_string($db_conn, $line[1]);
-
-                // Recupera l'id_docente dal database usando l'email
                 $docente_result = mysqli_query($db_conn, "SELECT id_docente FROM tdocente WHERE email = '$email_docente'");
                 if ($docente_result && mysqli_num_rows($docente_result) > 0) {
                     $docente_row = mysqli_fetch_assoc($docente_result);
                     $id_docente = $docente_row['id_docente'];
-
-                    // Inserisci il docente nella tabella ammesso
                     $query_ammesso = "INSERT INTO ammesso (id_docente, id_votazione) VALUES ('$id_docente', '$id_votazione')";
                     mysqli_query($db_conn, $query_ammesso);
                 } else {
@@ -76,65 +88,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             fclose($file);
         }
-
-        if (empty($docenti_non_trovati)) {
-            header("Location: visualizza_otp.php?otp=$otp&id_votazione=$id_votazione");
-            exit();
-        }
+        // Dopo la creazione, l'OTP è disponibile nel database per la votazione
+        header("Location: visualizza_otp.php");
+        exit();
     } else {
-        ?><h2>Errore nella creazione della votazione: </h2><?php
+        echo "<h2>Errore nella creazione della votazione: " . mysqli_error($db_conn) . "</h2>";
     }
 }
 
 $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tproposta");
-
-$id_collegio = isset($_GET['id_collegio']) ? $_GET['id_collegio'] : '';
-
-// Recupera il titolo del collegio dal database
-$collegio_titolo = '';
-if ($id_collegio) {
-    $collegio_result = mysqli_query($db_conn, "SELECT descrizione FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'");
-    if ($collegio_result && mysqli_num_rows($collegio_result) > 0) {
-        $collegio_row = mysqli_fetch_assoc($collegio_result);
-        $collegio_titolo = $collegio_row['descrizione'];
-    }
-}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
   <title>Crea Votazione</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Inclusione dei CSS necessari -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <style>
-        body {
-            background-image: url('images/admin.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: 20%;
-            height: 100vh; 
-        }
-    </style>
+      body {
+          background-image: url('images/admin.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: 20%;
+          height: 100vh; 
+      }
+  </style>
 </head>
 <body>
     <h1>Crea una nuova votazione</h1>
 
     <div class="container">
-        <form method="post" action="">
+        <form method="post" action="" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="descrizione_votazione">Descrizione:</label>
+                <label for="data_collegio">Data collegio:</label>
+                <input type="text" class="form-control" id="data_collegio" name="data_collegio" value="<?= htmlspecialchars($proposta['data_collegio'] ?? $collegio['data_collegio']) ?>" disabled>
+            </div>
+            <div class="form-group">
+                <label for="ora_inizio_votazione">Ora Inizio:</label>
+                <input type="time" class="form-control" id="ora_inizio_votazione" name="ora_inizio_votazione" required>
+            </div>
+            <div class="form-group">
+                <label for="ora_fine_votazione">Ora Fine:</label>
+                <input type="time" class="form-control" id="ora_fine_votazione" name="ora_fine_votazione" required>
+            </div>
+            <div class="form-group">
+                <label for="descrizione_votazione">Descrizione votazione:</label>
                 <input type="text" class="form-control" id="descrizione_votazione" name="descrizione_votazione" required>
-            </div>
-            <div class="form-group">
-                <label for="ora_inizio">Ora Inizio:</label>
-                <input type="time" class="form-control" id="ora_inizio" name="ora_inizio" required>
-            </div>
-            <div class="form-group">
-                <label for="ora_fine">Ora Fine:</label>
-                <input type="time" class="form-control" id="ora_fine" name="ora_fine" required>
             </div>
             <div class="form-group">
                 <label for="id_proposta">Proposta:</label>
@@ -152,8 +155,12 @@ if ($id_collegio) {
             </div>
             <div class="form-group">
                 <label for="collegio_titolo">Collegio:</label>
-                <input type="text" class="form-control" id="collegio_titolo" name="collegio_titolo" value="<?php echo htmlspecialchars($collegio_titolo); ?>" readonly>
-                <input type="hidden" name="id_collegio" value="<?php echo htmlspecialchars($id_collegio); ?>">
+                <input type="text" class="form-control" id="collegio_titolo" name="collegio_titolo" value="<?= htmlspecialchars($proposta['descrizione'] ?? $collegio['descrizione']) ?>" disabled>
+                <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($collegio['id_collegio']) ?>">
+            </div>
+            <div class="form-group">
+                <label for="file_csv">Carica il file CSV dei docenti:</label>
+                <input type="file" class="form-control" id="file_csv" name="file_csv" accept=".csv">
             </div>
             <button type="submit" class="btn btn-primary" name="crea_votazione">Crea Votazione</button>
         </form>
@@ -180,7 +187,7 @@ if ($id_collegio) {
                 <thead>
                     <tr>
                         <?php foreach ($csv_header as $header) { ?>
-                            <th><?php echo htmlspecialchars($header); ?></th>
+                            <th><?= htmlspecialchars($header) ?></th>
                         <?php } ?>
                     </tr>
                 </thead>
@@ -188,7 +195,7 @@ if ($id_collegio) {
                     <?php foreach ($csv_table_data as $row) { ?>
                         <tr>
                             <?php foreach ($row as $cell) { ?>
-                                <td><?php echo htmlspecialchars($cell); ?></td>
+                                <td><?= htmlspecialchars($cell) ?></td>
                             <?php } ?>
                         </tr>
                     <?php } ?>
