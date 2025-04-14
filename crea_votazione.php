@@ -64,6 +64,10 @@ if (isset($_POST['crea_votazione'])) {
 
     if (mysqli_query($db_conn, $query_votazione)) {
         $id_votazione = mysqli_insert_id($db_conn);
+
+        // Salvataggio OTP e ID della votazione
+        $_SESSION['otp'] = $otp;
+        $_SESSION['id_votazione'] = $id_votazione;
         
         // Gestione del caricamento file CSV per abilitare i docenti alla votazione
         if (isset($_FILES['file_csv']) && $_FILES['file_csv']['error'] == 0) {
