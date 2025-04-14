@@ -25,7 +25,7 @@ if (!isset($_SESSION['collegio'])) {
 $collegio = $_SESSION['collegio'];
 $id_collegio = $collegio['id_collegio'];
 
-// Query per ottenere i dettagli aggiornati del collegio (facoltativo)
+// Recupera i dettagli aggiornati del collegio dal database
 $query = "SELECT id_collegio, data_collegio, ora_inizio, ora_fine, descrizione FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'";
 $result = mysqli_query($db_conn, $query);
 $proposta = mysqli_fetch_assoc($result);
@@ -50,9 +50,10 @@ if (isset($_POST['crea_votazione'])) {
     $ora_inizio_votazione = mysqli_real_escape_string($db_conn, $_POST['ora_inizio_votazione']);
     $ora_fine_votazione = mysqli_real_escape_string($db_conn, $_POST['ora_fine_votazione']);
     $id_proposta = mysqli_real_escape_string($db_conn, $_POST['id_proposta']);
-    // L'id del collegio lo abbiamo già in sessione
-    $otp = rand(100, 999); // OTP a 3 cifre
-
+    
+    // OTP a 3 cifre
+    $otp = rand(100, 999);
+    
     $query_votazione = "INSERT INTO tvotazione (descrizione, ora_inizio, ora_fine, id_proposta, id_collegio, otp) 
                           VALUES ('$descrizione_votazione', '$ora_inizio_votazione', '$ora_fine_votazione', '$id_proposta', '$id_collegio', '$otp')";
 
@@ -63,8 +64,8 @@ if (isset($_POST['crea_votazione'])) {
 
     if (mysqli_query($db_conn, $query_votazione)) {
         $id_votazione = mysqli_insert_id($db_conn);
-
-        // Gestione del file CSV per abilitare docenti alla votazione
+        
+        // Gestione del caricamento file CSV per abilitare i docenti alla votazione
         if (isset($_FILES['file_csv']) && $_FILES['file_csv']['error'] == 0) {
             $file_tmp = $_FILES['file_csv']['tmp_name'];
             $file = fopen($file_tmp, 'r');
@@ -83,7 +84,7 @@ if (isset($_POST['crea_votazione'])) {
             }
             fclose($file);
         }
-        // Dopo la creazione, reindirizza alla pagina di visualizzazione OTP
+        // Dopo la creazione, l'OTP è disponibile nel database per la votazione
         header("Location: visualizza_otp.php");
         exit();
     } else {
@@ -100,18 +101,18 @@ $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tprop
   <title>Crea Votazione</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Includi i CSS necessari -->
+  <!-- Inclusione dei CSS necessari -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <style>
-        body {
-            background-image: url('images/admin.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: 20%;
-            height: 100vh; 
-        }
-    </style>
+      body {
+          background-image: url('images/admin.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: 20%;
+          height: 100vh; 
+      }
+  </style>
 </head>
 <body>
     <h1>Crea una nuova votazione</h1>
@@ -120,7 +121,6 @@ $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tprop
         <form method="post" action="" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="data_collegio">Data collegio:</label>
-                <!-- Mostra la data del collegio memorizzata in sessione (oppure quella aggiornata dal database) -->
                 <input type="text" class="form-control" id="data_collegio" name="data_collegio" value="<?= htmlspecialchars($proposta['data_collegio'] ?? $collegio['data_collegio']) ?>" disabled>
             </div>
             <div class="form-group">
