@@ -116,9 +116,21 @@
             include 'connessione.php';
             $query_docenti = "SELECT COUNT(*) AS num_docenti FROM tdocente";
             $result_docenti = mysqli_query($db_conn, $query_docenti);
+            $query_collegi = "SELECT COUNT(*) AS num_collegi FROM tcollegiodocenti";
+            $result_collegi = mysqli_query($db_conn, $query_collegi);
+            $query_proposte = "SELECT COUNT(*) AS num_proposte FROM tproposta";
+            $result_proposte = mysqli_query($db_conn, $query_proposte);
+            $query_votazioni = "SELECT COUNT(*) AS num_votazioni FROM tvotazione";
+            $result_votazioni = mysqli_query($db_conn, $query_votazioni);
             if ($result_docenti) {
                 $row_docenti = mysqli_fetch_assoc($result_docenti);
+                $row_collegi = mysqli_fetch_assoc($result_collegi);
+                $row_proposte = mysqli_fetch_assoc($result_proposte);
+                $row_votazioni = mysqli_fetch_assoc($result_votazioni);
                 echo "<h3>Numero docenti registrati: " . $row_docenti['num_docenti']-1 . "</h3>";
+                echo "<h3>Numero proposte registrate: " . $row_proposte['num_proposte'] . "</h3>";
+                echo "<h3>Numero collegi registrati: " . $row_collegi['num_collegi'] . "</h3>";
+                echo "<h3>Numero votazioni effettuate: " . $row_votazioni['num_votazioni'] . "</h3>";
             } else {
                 echo "<h3>Errore nel recupero dati.</h3>";
             }
@@ -127,9 +139,9 @@
 
         <div class="center-box">
             <h2>Gestione</h2>
-            <a href="crea_proposta.php" class="btn btn-primary">Gestione proposte</a><br><br>
-            <a href="gestione_collegi.php" class="btn btn-primary">Gestione collegi</a>
             <a href="gestisci_docenti.php" class="btn btn-primary">Gestisci docenti</a><br><br>
+            <a href="crea_proposta.php" class="btn btn-primary">Gestione proposte</a><br><br>
+            <a href="gestione_collegi.php" class="btn btn-primary">Gestione collegi</a><br><br>
             <a href="risultati_votazioni.php" class="btn btn-primary">Visualizza risultati votazioni</a>
         </div>
     </div>
