@@ -1,4 +1,3 @@
-<!-- filepath: c:\xampp\htdocs\gestionecollegio\GestioneCollegio\risultati_votazioni.php -->
 <?php
 session_start();
 
@@ -9,7 +8,7 @@ if (!isset($_SESSION['if_loggato']) || $_SESSION['if_loggato'] !== true || !isse
 
 include 'connessione.php';
 
-// Query per ottenere i collegi, le votazioni e i risultati
+// Query per ottenere le proposte e i risultati delle votazioni
 $query = "
     SELECT 
         c.descrizione AS collegio_descrizione,
@@ -27,6 +26,15 @@ $query = "
 ";
 
 $result = mysqli_query($db_conn, $query);
+
+// Inizializziamo un array per contenere i dati delle votazioni per ogni proposta
+$votazioniPerProposta = [];
+
+if ($result && mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $votazioniPerProposta[] = $row;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -36,6 +44,7 @@ $result = mysqli_query($db_conn, $query);
     <title>Risultati Votazioni</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             background: #007bff;
@@ -50,6 +59,17 @@ $result = mysqli_query($db_conn, $query);
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
+        .cont-graph {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            width: 60%;
+            margin: 20px auto; /* Centra orizzontalmente */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         table {
             width: 100%;
             margin-top: 20px;
@@ -63,40 +83,121 @@ $result = mysqli_query($db_conn, $query);
         th {
             background-color: #f2f2f2;
         }
+        #graficoTorta {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Risultati Votazioni</h1>
-        <?php if ($result && mysqli_num_rows($result) > 0): ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Collegio</th>
-                        <th>Votazione</th>
-                        <th>Proposta</th>
-                        <th>Favorevoli</th>
-                        <th>Astenuti</th>
-                        <th>Contrari</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($row['collegio_descrizione']) ?></td>
-                            <td><?= htmlspecialchars($row['votazione_descrizione']) ?></td>
-                            <td><?= htmlspecialchars($row['proposta_titolo']) ?></td>
-                            <td><?= htmlspecialchars($row['favorevoli']) ?></td>
-                            <td><?= htmlspecialchars($row['astenuti']) ?></td>
-                            <td><?= htmlspecialchars($row['contrari']) ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        <?php else: ?>
-            <p class="alert alert-warning">Nessun risultato trovato.</p>
-        <?php endif; ?>
-        <a href="admin.php" class="btn btn-primary">Torna indietro</a>
+
+        <!-- Menu a tendina per scegliere la proposta -->
+        <label for="proposta">Scegli una proposta:</label>
+        <select id="proposta" class="form-control">
+            <option value="">Seleziona una proposta</option>
+            <?php foreach ($votazioniPerProposta as $row): ?>
+                <option value="<?= $row['proposta_titolo'] ?>"><?= $row['proposta_titolo'] ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <!-- Menu a tendina per scegliere la votazione -->
+        <label for="votazione">Scegli una votazione:</label>
+        <select id="votazione" class="form-control" disabled>
+            <option value="">Seleziona una votazione</option>
+        </select>
+
+        <!-- Canvas per il grafico -->
+        <div class="cont-graph" style="margin-top: 20px;">
+            <canvas id="graficoTorta" width="60" height="60"></canvas>
+        </div>
+
+        <a href="admin.php" class="btn btn-primary" style="margin-top: 20px;">Torna indietro</a>
     </div>
+
+    <script>
+        // Dati delle votazioni per ciascuna proposta
+        const votazioniPerProposta = <?php echo json_encode($votazioniPerProposta); ?>;
+
+        // Elementi HTML
+        const propostaSelect = document.getElementById('proposta');
+        const votazioneSelect = document.getElementById('votazione');
+        const graficoCanvas = document.getElementById('graficoTorta');
+        let chartInstance = null;  // Variabile per tenere traccia dell'istanza del grafico
+
+
+        // Popolare il secondo menu con le votazioni quando si seleziona una proposta
+        propostaSelect.addEventListener('change', function() {
+            const propostaSelezionata = propostaSelect.value;
+            if (propostaSelezionata) {
+                // Abilita il secondo menu e popola le votazioni corrispondenti
+                votazioneSelect.disabled = false;
+                votazioneSelect.innerHTML = `<option value="">Seleziona una votazione</option>`;
+
+                // Filtrare le votazioni per la proposta selezionata
+                const votazioni = votazioniPerProposta.filter(item => item.proposta_titolo === propostaSelezionata);
+                votazioni.forEach(votazione => {
+                    votazioneSelect.innerHTML += `<option value="${votazione.votazione_descrizione}">${votazione.votazione_descrizione}</option>`;
+                });
+            } else {
+                votazioneSelect.disabled = true;
+                votazioneSelect.innerHTML = `<option value="">Seleziona una votazione</option>`;
+            }
+        });
+
+        // Mostra il grafico con i risultati quando si seleziona una votazione
+        votazioneSelect.addEventListener('change', function() {
+            const propostaSelezionata = propostaSelect.value;
+            const votazioneSelezionata = votazioneSelect.value;
+
+            if (propostaSelezionata && votazioneSelezionata) {
+                // Trova i risultati corrispondenti
+                const votazione = votazioniPerProposta.find(item => item.proposta_titolo === propostaSelezionata && item.votazione_descrizione === votazioneSelezionata);
+
+                if (votazione) {
+                    // Se esiste un grafico precedente, distruggilo
+                    if (chartInstance) {
+                        chartInstance.destroy();
+                    }
+
+                    // Dati per il grafico a torta
+                    const datiGrafico = {
+                        labels: ['Favorevoli', 'Contrari', 'Astenuti'],
+                        datasets: [{
+                            data: [votazione.favorevoli, votazione.contrari, votazione.astenuti],
+                            backgroundColor: ['#0098ff', '#ff0036', '#ffb500']
+                        }]
+                    };
+
+                    // Configurazione del grafico
+                    const config = {
+                        type: 'pie',
+                        data: datiGrafico,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(tooltipItem) {
+                                            return tooltipItem.label + ': ' + tooltipItem.raw;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    // Creare il grafico
+                    chartInstance = new Chart(graficoCanvas, config);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
