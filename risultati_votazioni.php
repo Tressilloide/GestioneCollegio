@@ -59,17 +59,6 @@ if ($result && mysqli_num_rows($result) > 0) {
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
-        .cont-graph {
-            background: white;
-            color: black;
-            padding: 20px;
-            border-radius: 10px;
-            width: 60%;
-            margin: 20px auto; /* Centra orizzontalmente */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
         table {
             width: 100%;
             margin-top: 20px;
@@ -83,10 +72,29 @@ if ($result && mysqli_num_rows($result) > 0) {
         th {
             background-color: #f2f2f2;
         }
+
+        .cont-graph {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         #graficoTorta {
-            display: block;
-            max-width: 100%;
-            height: auto;
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        @media (max-width: 768px) {
+            .cont-graph {
+                padding: 10px;
+            }
         }
 
     </style>
@@ -168,7 +176,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                         labels: ['Favorevoli', 'Contrari', 'Astenuti'],
                         datasets: [{
                             data: [votazione.favorevoli, votazione.contrari, votazione.astenuti],
-                            backgroundColor: ['#0098ff', '#ff0036', '#ffb500']
+                            backgroundColor: ['#007bff', '#ff0000', '#ffc400']
                         }]
                     };
 
