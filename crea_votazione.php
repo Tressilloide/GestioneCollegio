@@ -69,10 +69,9 @@ if (isset($_POST['crea_votazione'])) {
         $_SESSION['otp'] = $otp;
         $_SESSION['id_votazione'] = $id_votazione;
         
-        // Gestione del caricamento file CSV per abilitare i docenti alla votazione
-        if (isset($_FILES['file_csv']) && $_FILES['file_csv']['error'] == 0) {
-            $file_tmp = $_FILES['file_csv']['tmp_name'];
-            $file = fopen($file_tmp, 'r');
+        // Utilizzo del file CSV predefinito
+        if (file_exists($filename)) {
+            $file = fopen($filename, 'r');
             fgetcsv($file); // salta l'intestazione
             while (($line = fgetcsv($file)) !== FALSE) {
                 $email_docente = mysqli_real_escape_string($db_conn, $line[1]);
@@ -160,7 +159,7 @@ $proposte_result = mysqli_query($db_conn, "SELECT id_proposta, titolo FROM tprop
             </div>
             <div class="form-group">
                 <label for="file_csv">Carica il file CSV dei docenti:</label>
-                <input type="file" class="form-control" id="file_csv" name="file_csv" accept=".csv">
+                <p class="alert alert-info">Il file predefinito "elenco_docenti.csv" sarà utilizzato automaticamente.</p>
             </div>
             <button type="submit" class="btn btn-primary" name="crea_votazione">Crea Votazione</button>
         </form>
