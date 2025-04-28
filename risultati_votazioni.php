@@ -14,9 +14,9 @@ $query = "
         c.descrizione AS collegio_descrizione,
         v.descrizione AS votazione_descrizione,
         p.titolo AS proposta_titolo,
-        SUM(CASE WHEN e.voto = 1 THEN 1 ELSE 0 END) AS favorevoli,
-        SUM(CASE WHEN e.voto = 0 THEN 1 ELSE 0 END) AS astenuti,
-        SUM(CASE WHEN e.voto = -1 THEN 1 ELSE 0 END) AS contrari
+        SUM(CASE WHEN e.voto = 'Favorevole' THEN 1 ELSE 0 END) AS favorevoli,
+        SUM(CASE WHEN e.voto = 'Astenuto' THEN 1 ELSE 0 END) AS astenuti,
+        SUM(CASE WHEN e.voto = 'Contrario' THEN 1 ELSE 0 END) AS contrari
     FROM tcollegiodocenti c
     JOIN tvotazione v ON c.id_collegio = v.id_collegio
     JOIN tproposta p ON v.id_proposta = p.id_proposta
