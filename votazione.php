@@ -124,16 +124,20 @@
 
                 // Aggiorna l'ora di uscita nella tabella partecipa
                 $query_aggiorna_uscita = "UPDATE partecipa 
-                                      SET ora_uscita = '$ora_uscita' 
-                                      WHERE id_collegio = '$id_collegio' AND id_docente = '$id_docente'";
+                                  SET ora_uscita = '$ora_uscita' 
+                                  WHERE id_collegio = '$id_collegio' AND id_docente = '$id_docente'";
                 if (mysqli_query($db_conn, $query_aggiorna_uscita)) {
-                    $messaggio = 'Ora di uscita registrata con successo.';
+                    $_SESSION['messaggio'] = 'Ora di uscita registrata con successo.';
                 } else {
-                    $messaggio = 'Errore durante la registrazione dell\'ora di uscita.';
+                    $_SESSION['messaggio'] = 'Errore durante la registrazione dell\'ora di uscita.';
                 }
             } else {
-                $messaggio = 'Errore: docente non trovato.';
+                $_SESSION['messaggio'] = 'Errore: docente non trovato.';
             }
+
+            // Reindirizza alla pagina areariservata.php
+            header("Location: areariservata.php");
+            exit();
         }
     }
 
@@ -237,8 +241,6 @@
         <form method="post" action="">
             <button type="submit" class="btn btn-danger" name="esci">Esci</button>
         </form>
-        <br>
-        <a href="areariservata.php" class="btn btn-primary">Torna indietro</a>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
