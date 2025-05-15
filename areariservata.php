@@ -1,4 +1,5 @@
 <?php
+    ob_start(); // Inizia il buffer di output
     include 'connessione.php';
     include 'funzioni.php';
     session_start();
@@ -173,6 +174,37 @@
             exit();//se non metto exit() esplode tutto (entra lostesso nell'else), non so pk
         }
     ?>
+
+    <?php
+    if (isset($_SESSION['messaggio'])) {
+        echo '<div class="alert alert-info">' . htmlspecialchars($_SESSION['messaggio']) . '</div>';
+        unset($_SESSION['messaggio']); // Rimuove il messaggio dopo averlo mostrato
+    }
+?>
 </body>
 </html>
+
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["verifica_otp_collegio"])) {
+    $otp_collegio = $_POST["otp_collegio"];
+
+    // Validazione e sanitizzazione dell'input
+    $otp_collegio = trim($otp_collegio);
+    $otp_collegio = mysqli_real_escape_string($db_conn, $otp_collegio);
+
+    $query_collegio = "SELECT id_collegio FROM tcollegiodocenti WHERE otp = '$otp_collegio'";
+    $result_collegio = mysqli_query($db_conn, $query_collegio);
+
+    if ($result_collegio && mysqli_num_rows($result_collegio) > 0) {
+        $row_collegio = mysqli_fetch_assoc($result_collegio);
+        $_SESSION['id_collegio'] = $row_collegio['id_collegio'];
+        header("Location: votazione.php");
+        exit();
+    } else {
+        $_SESSION['messaggio'] = 'OTP del collegio non valida.';
+        header("Location: areariservata.php");
+        exit();
+    }
+}
+?>
 

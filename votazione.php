@@ -1,4 +1,5 @@
 <?php
+    ob_start(); // Inizia il buffer di output
     include 'connessione.php';
     include 'funzioni.php';
     session_start();
@@ -38,16 +39,30 @@
                     // Inserisci il record nella tabella partecipa
                     $query_partecipa = "INSERT INTO partecipa (id_collegio, id_docente, ora_entrata, ora_uscita) 
                                         VALUES ('$id_collegio', '$id_docente', '$ora_entrata', NULL)";
-                    if (mysqli_query($db_conn, $query_partecipa)) {
-                        $messaggio = 'Accesso al collegio registrato con successo. Inserisci l\'OTP della votazione.';
-                    } else {
-                        $messaggio = 'Errore durante la registrazione dell\'accesso al collegio.';
+                    try {
+                        if (mysqli_query($db_conn, $query_partecipa)) {
+                            $_SESSION['messaggio'] = 'Accesso al collegio registrato con successo.';
+                            header("Location: votazione.php");
+                            exit();
+                        }
+                    } catch (mysqli_sql_exception $e) {
+                        if ($e->getCode() == 1062) { // Codice errore per chiave duplicata
+                            $_SESSION['messaggio'] = 'Errore: sei già registrato per questo collegio.';
+                        } else {
+                            $_SESSION['messaggio'] = 'Errore durante la registrazione dell\'accesso al collegio.';
+                        }
+                        header("Location: areariservata.php");
+                        exit();
                     }
                 } else {
-                    $messaggio = 'Errore: docente non trovato.';
+                    $_SESSION['messaggio'] = 'Errore: docente non trovato.';
+                    header("Location: areariservata.php");
+                    exit();
                 }
             } else {
-                $messaggio = 'OTP del collegio non valida.';
+                $_SESSION['messaggio'] = 'OTP del collegio non valida.';
+                header("Location: areariservata.php");
+                exit();
             }
         } elseif (isset($_POST['verifica_otp'])) {
             $otp = mysqli_real_escape_string($db_conn, $_POST['otp']);
@@ -92,6 +107,71 @@
                 unset($_SESSION['id_docente']);
             } else {
                 $messaggio = 'Errore nell\'invio del voto.';
+            }
+        } elseif (isset($_POST['esci'])) {
+            // Gestione del bottone "Esci"
+            $id_collegio = $_SESSION['id_collegio'];
+            $email = mysqli_real_escape_string($db_conn, $_SESSION['email_utente']);
+
+            // Recupera l'id_docente
+            $query_docente = "SELECT id_docente FROM tdocente WHERE email = '$email'";
+            $result_docente = mysqli_query($db_conn, $query_docente);
+
+            if ($result_docente && mysqli_num_rows($result_docente) > 0) {
+                $row_docente = mysqli_fetch_assoc($result_docente);
+                $id_docente = $row_docente['id_docente'];
+                $ora_uscita = date('H:i:s');
+
+                // Aggiorna l'ora di uscita nella tabella partecipa
+                $query_aggiorna_uscita = "UPDATE partecipa 
+                                      SET ora_uscita = '$ora_uscita' 
+                                      WHERE id_collegio = '$id_collegio' AND id_docente = '$id_docente'";
+                if (mysqli_query($db_conn, $query_aggiorna_uscita)) {
+                    $messaggio = 'Ora di uscita registrata con successo.';
+                } else {
+                    $messaggio = 'Errore durante la registrazione dell\'ora di uscita.';
+                }
+            } else {
+                $messaggio = 'Errore: docente non trovato.';
+            }
+        }
+    }
+
+    // Imposta automaticamente l'ora di uscita all'ora di fine del collegio se non è stata registrata
+    if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_SESSION['id_collegio'])) {
+        $id_collegio = $_SESSION['id_collegio'];
+        $email = mysqli_real_escape_string($db_conn, $_SESSION['email_utente']);
+
+        // Recupera l'id_docente
+        $query_docente = "SELECT id_docente FROM tdocente WHERE email = '$email'";
+        $result_docente = mysqli_query($db_conn, $query_docente);
+
+        if ($result_docente && mysqli_num_rows($result_docente) > 0) {
+            $row_docente = mysqli_fetch_assoc($result_docente);
+            $id_docente = $row_docente['id_docente'];
+
+            // Recupera l'ora di fine del collegio
+            $query_ora_fine = "SELECT ora_fine FROM tcollegiodocenti WHERE id_collegio = '$id_collegio'";
+            $result_ora_fine = mysqli_query($db_conn, $query_ora_fine);
+
+            if ($result_ora_fine && mysqli_num_rows($result_ora_fine) > 0) {
+                $row_ora_fine = mysqli_fetch_assoc($result_ora_fine);
+                $ora_fine = $row_ora_fine['ora_fine'];
+
+                // Aggiorna l'ora di uscita se non è già stata registrata
+                $query_verifica_uscita = "SELECT ora_uscita FROM partecipa 
+                                      WHERE id_collegio = '$id_collegio' AND id_docente = '$id_docente'";
+                $result_verifica_uscita = mysqli_query($db_conn, $query_verifica_uscita);
+
+                if ($result_verifica_uscita && mysqli_num_rows($result_verifica_uscita) > 0) {
+                    $row_verifica_uscita = mysqli_fetch_assoc($result_verifica_uscita);
+                    if (is_null($row_verifica_uscita['ora_uscita'])) {
+                        $query_aggiorna_uscita = "UPDATE partecipa 
+                                              SET ora_uscita = '$ora_fine' 
+                                              WHERE id_collegio = '$id_collegio' AND id_docente = '$id_docente'";
+                        mysqli_query($db_conn, $query_aggiorna_uscita);
+                    }
+                }
             }
         }
     }
@@ -154,8 +234,11 @@
             </form>
         <?php endif; ?>
         <br>
+        <form method="post" action="">
+            <button type="submit" class="btn btn-danger" name="esci">Esci</button>
+        </form>
+        <br>
         <a href="areariservata.php" class="btn btn-primary">Torna indietro</a>
-
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
