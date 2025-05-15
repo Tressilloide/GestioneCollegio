@@ -48,7 +48,7 @@ CREATE TABLE partecipa(
     id_collegio                 BIGINT              NOT NULL,
     id_docente                  BIGINT              NOT NULL,
     ora_entrata                 TIME                NOT NULL,
-    ora_uscita                  TIME                NOT NULL,
+    ora_uscita                  TIME                NULL, -- Permetti valori NULL
     PRIMARY KEY(id_collegio, id_docente),
     FOREIGN KEY(id_collegio) REFERENCES tcollegiodocenti(id_collegio),
     FOREIGN KEY(id_docente) REFERENCES tdocente(id_docente)

@@ -13,11 +13,47 @@
     $mostra_form_voto = false;
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if (isset($_POST['verifica_otp'])) {
+        if (isset($_POST['verifica_otp_collegio'])) {
+            $otp_collegio = mysqli_real_escape_string($db_conn, $_POST['otp_collegio']);
+            $email = mysqli_real_escape_string($db_conn, $_SESSION['email_utente']);
+
+            // Verifica OTP del collegio
+            $query_collegio = "SELECT id_collegio FROM tcollegiodocenti WHERE otp = '$otp_collegio'";
+            $result_collegio = mysqli_query($db_conn, $query_collegio);
+
+            if ($result_collegio && mysqli_num_rows($result_collegio) > 0) {
+                $row_collegio = mysqli_fetch_assoc($result_collegio);
+                $_SESSION['id_collegio'] = $row_collegio['id_collegio'];
+
+                // Inserisci nella tabella partecipa
+                $id_collegio = $row_collegio['id_collegio'];
+                $query_docente = "SELECT id_docente FROM tdocente WHERE email = '$email'";
+                $result_docente = mysqli_query($db_conn, $query_docente);
+
+                if ($result_docente && mysqli_num_rows($result_docente) > 0) {
+                    $row_docente = mysqli_fetch_assoc($result_docente);
+                    $id_docente = $row_docente['id_docente'];
+                    $ora_entrata = date('H:i:s');
+
+                    // Inserisci il record nella tabella partecipa
+                    $query_partecipa = "INSERT INTO partecipa (id_collegio, id_docente, ora_entrata, ora_uscita) 
+                                        VALUES ('$id_collegio', '$id_docente', '$ora_entrata', NULL)";
+                    if (mysqli_query($db_conn, $query_partecipa)) {
+                        $messaggio = 'Accesso al collegio registrato con successo. Inserisci l\'OTP della votazione.';
+                    } else {
+                        $messaggio = 'Errore durante la registrazione dell\'accesso al collegio.';
+                    }
+                } else {
+                    $messaggio = 'Errore: docente non trovato.';
+                }
+            } else {
+                $messaggio = 'OTP del collegio non valida.';
+            }
+        } elseif (isset($_POST['verifica_otp'])) {
             $otp = mysqli_real_escape_string($db_conn, $_POST['otp']);
             $email = mysqli_real_escape_string($db_conn, $_SESSION['email_utente']);
 
-            //prendo id votazione otp
+            // Verifica OTP della votazione
             $query_otp = "SELECT id_votazione FROM tvotazione WHERE otp = '$otp'";
             $result_otp = mysqli_query($db_conn, $query_otp);
 
@@ -25,15 +61,13 @@
                 $row_otp = mysqli_fetch_assoc($result_otp);
                 $id_votazione = $row_otp['id_votazione'];
 
-                //join tra ammesso e tdocente, prendo l'idvotazione dove l'otp corrispondeva a quello inserito e l'email corrispondeva a quella dell'utente
-                //a.id_docente = alias ammesso
                 $query_ammesso = "SELECT a.id_docente 
                                   FROM ammesso a
                                   JOIN tdocente d ON a.id_docente = d.id_docente
                                   WHERE a.id_votazione = '$id_votazione' AND d.email = '$email'";
                 $result_ammesso = mysqli_query($db_conn, $query_ammesso);
 
-                if ($result_ammesso && mysqli_num_rows($result_ammesso) > 0) {//se c'è almeno un utente   
+                if ($result_ammesso && mysqli_num_rows($result_ammesso) > 0) {
                     $row_ammesso = mysqli_fetch_assoc($result_ammesso);
                     $_SESSION['id_votazione'] = $id_votazione;
                     $_SESSION['id_docente'] = $row_ammesso['id_docente'];
@@ -42,7 +76,7 @@
                     $messaggio = 'Non sei ammesso a votare per questa votazione.';
                 }
             } else {
-                $messaggio = 'OTP non valida.';
+                $messaggio = 'OTP della votazione non valida.';
             }
         } elseif (isset($_POST['invia_voto'])) {
             $id_votazione = $_SESSION['id_votazione'];

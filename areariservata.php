@@ -131,13 +131,13 @@
     <div class="center-container">
         <!-- Div sinistro -->
         <div class="center-box">
-            <h2>Accedi alla votazione</h2>
-            <form name="frmVoto" method="post" action="votazione.php">
+            <h2>Accedi al Collegio</h2>
+            <form name="frmCollegio" method="post" action="votazione.php">
                 <div class="form-group">
-                    <label for="txtOTP">One Time Password:</label>
-                    <input type="password" class="form-control" id="txtOTP" name="otp" required placeholder="Inserisci la OTP">
-                </div><!--  fa  un post a votazione.php    -->
-                <button type="submit" class="btn btn-primary" name="verifica_otp">Login</button>
+                    <label for="txtOTPCollegio">One Time Password del Collegio:</label>
+                    <input type="password" class="form-control" id="txtOTPCollegio" name="otp_collegio" required placeholder="Inserisci la OTP del Collegio">
+                </div>
+                <button type="submit" class="btn btn-primary" name="verifica_otp_collegio">Accedi</button>
             </form>
         </div>
 
