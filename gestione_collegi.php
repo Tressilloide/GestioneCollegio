@@ -132,7 +132,8 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
         th:nth-child(5), td:nth-child(5),
         th:nth-child(6), td:nth-child(6),
         th:nth-child(7), td:nth-child(7),
-        th:nth-child(8), td:nth-child(8) {
+        th:nth-child(8), td:nth-child(8),
+        th:nth-child(9), td:nth-child(9) {
             width: 2%;
             min-width: 50px;
             text-align: center;
@@ -189,6 +190,7 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                 <th>Modifica</th>
                 <th>Elimina</th>
                 <th>Visualizza OTP</th>
+                <th>Visualizza</th>
             </tr>
             <?php
             if ($result_collegi && mysqli_num_rows($result_collegi) > 0) {
@@ -200,7 +202,6 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                         <td><?= htmlspecialchars($row['ora_inizio'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                         <td><?= htmlspecialchars($row['ora_fine'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                         <td>
-                            <!-- Il form ora invia al medesimo script per la gestione -->
                             <form method="post" action="">
                                 <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
                                 <button type="submit" name="btnConferma" class="btn btn-link">
@@ -232,18 +233,34 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
                                 </button>
                             </form>
                         </td>
+                        <td>
+                            <form method="post" action="visualizza_partecipanti.php">
+                                <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
+                                <button type="submit" class="btn btn-link">
+                                    <img src="images/visualizza.png" alt="Visualizza" width="20px" height="20px">
+                                </button>
+                            </form>
+                        </td>
                     </tr>
             <?php
                 }
             } else {
             ?>
                 <tr>
-                    <td colspan="8">Nessuna proposta trovata</td>
+                    <td colspan="9">Nessuna proposta trovata</td>
                 </tr>
             <?php
             }
             ?>
         </table>
     </div>
+
+    <!-- Includi qui i tuoi script JS, se necessari -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+<?php
+mysqli_close($db_conn);
+?>
