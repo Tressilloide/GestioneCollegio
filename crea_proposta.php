@@ -86,54 +86,81 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <style>
         body {
+            background: #007bff;
             background-image: url('images/admin.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-size: 20%;
-            height: 100vh; 
+            height: 100vh;
         }
-
-        li {
-            list-style-type: none;
-        }
-
-        .container{
+        .container {
             background-color: white;
             padding: 20px;
             border-radius: 10px;
             margin-top: 50px;
-            text-justify: auto;
         }
-
         table {
-        table-layout: fixed;
-        width: 100%;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-
         th, td {
             text-align: left;
             vertical-align: top;
             word-wrap: break-word;
-            overflow-wrap: break-word;
         }
-
-        th:nth-child(1), td:nth-child(1) { /* Colonna Titolo */
-            width: 25%;
+        /* Impostazioni per le colonne */
+        th:nth-child(1), td:nth-child(1) {
+            width: 55%;
             min-width: 150px;
             max-width: 300px;
         }
-
-        th:nth-child(3), td:nth-child(3),  /* Colonna Modifica */
-        th:nth-child(4), td:nth-child(4) { /* Colonna Elimina */
-            width: 7%;
+        th:nth-child(2), td:nth-child(2),
+        th:nth-child(3), td:nth-child(3),
+        th:nth-child(4), td:nth-child(4) {
+            width: 8%;
             min-width: 50px;
             text-align: center;
         }
-
-        th:nth-child(2), td:nth-child(2) { /* Colonna Descrizione */
-            width: auto;
+        th:nth-child(5), td:nth-child(5),
+        th:nth-child(6), td:nth-child(6),
+        th:nth-child(7), td:nth-child(7),
+        th:nth-child(8), td:nth-child(8),
+        th:nth-child(9), td:nth-child(9) {
+            width: 2%;
+            min-width: 50px;
+            text-align: center;
         }
+        .center-container {
+            display: block;
+            width: 80%;
+            margin: 80px auto 0 auto;
+        }
+
+        .center-box {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            color: black;
+        }
+
+        @media (max-width: 768px) {
+            .center-container {
+                flex-direction: column;
+                align-items: center;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .center-box {
+                width: 100%;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -156,7 +183,8 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="center-container">
+    <div class="center-box">
         <form method="post" action="">
             <div class="form-group">
                 <label for="titolo">Titolo:</label>
@@ -169,30 +197,32 @@
             <button type="submit" class="btn btn-primary" name="btnCreaProposta">Crea Proposta</button>
             <a href="admin.php" class="btn btn-primary">Torna indietro</a>
         </form>
-        <br><br>
-        <h2>Proposte create</h2>
+    </div>
+    <div class="center-box">
+    <h2>Proposte disponibili</h2>
+    <div class="table-responsive">
         <table class="table table-bordered">
-            <tr>
-                <th>Titolo</th>
-                <th>Descrizione</th>
-                <th>Modifica</th>
-                <th>Elimina</th>
-            </tr>
-            <tr>
+            <thead>
+                <tr>
+                    <th>Titolo</th>
+                    <th>Descrizione</th>
+                    <th>Modifica</th>
+                    <th>Elimina</th>
+                </tr>
+            </thead>
+            <tbody>
                 <?php
                 if ($result_collegi && mysqli_num_rows($result_collegi) > 0) {
                     while ($row = mysqli_fetch_assoc($result_collegi)) {
                 ?>
                         <tr>
-                            <li>
                             <td><?= htmlspecialchars($row['titolo'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($row['descrizione'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                            </li>
                             <td>
                                 <form method="post" action="proposta_modifica.php">
                                     <input type="hidden" name="id_proposta" value="<?= htmlspecialchars($row['id_proposta']) ?>">
                                     <button type="submit" name="btnModifica" class="btn btn-link">
-                                        <img src="images/penna_modifica.png">
+                                        <img src="images/penna_modifica.png" alt="Modifica">
                                     </button>
                                 </form>
                             </td>
@@ -200,23 +230,26 @@
                                 <form method="post" action="">
                                     <input type="hidden" name="id_proposta" value="<?= htmlspecialchars($row['id_proposta']) ?>">
                                     <button type="submit" name="btnElimina" class="btn btn-link">
-                                        <img src="images/eliminazione.png" width="20px" height="20px">
+                                        <img src="images/eliminazione.png" alt="Elimina" width="20px" height="20px">
                                     </button>
                                 </form>
                             </td>
                         </tr>
                 <?php
-                        }
-                    } else {
-                ?>
-                    <td colspan='4'>
-                        <li>Nessuna proposta trovata</li>
-                    </td>
-                <?php
                     }
+                } else {
                 ?>
-            </tr>
+                    <tr>
+                        <td colspan="4">Nessuna proposta trovata</td>
+                    </tr>
+                <?php
+                }
+                ?>
+            </tbody>
         </table>
+    </div>
+</div>
+
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

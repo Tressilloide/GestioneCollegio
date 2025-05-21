@@ -16,12 +16,29 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
 include 'connessione.php';
 
 if (isset($_POST['btnCreaProposta'])) {
-    $data_collegio = mysqli_real_escape_string($db_conn, $_POST['data_collegio']);
-    $ora_inizio = mysqli_real_escape_string($db_conn, $_POST['ora_inizio']);
-    $ora_fine = mysqli_real_escape_string($db_conn, $_POST['ora_fine']);
+    $data_collegio = $_POST['data_collegio'];
+    $ora_inizio = $_POST['ora_inizio'];
+    $ora_fine = $_POST['ora_fine'];
     $descrizione = mysqli_real_escape_string($db_conn, $_POST['descrizione']);
-    
-    // Genera un OTP di 3 cifre
+
+    $oggi = date('Y-m-d');
+    $anno_prossimo = date('Y', strtotime('+1 year')) . "-12-31";
+
+    if ($data_collegio < $oggi || $data_collegio > $anno_prossimo) {
+        echo "<h2>Errore: La data deve essere tra oggi e il 31 dicembre dell’anno prossimo.</h2>";
+        exit();
+    }
+
+    if ($ora_inizio >= $ora_fine) {
+        echo "<h2>Errore: L'orario di inizio deve essere precedente all'orario di fine.</h2>";
+        exit();
+    }
+
+    // Tutto valido, procedi
+    $data_collegio = mysqli_real_escape_string($db_conn, $data_collegio);
+    $ora_inizio = mysqli_real_escape_string($db_conn, $ora_inizio);
+    $ora_fine = mysqli_real_escape_string($db_conn, $ora_fine);
+
     $otp = rand(100, 999);
 
     $query_collegio = "INSERT INTO tcollegiodocenti (data_collegio, ora_inizio, ora_fine, descrizione, otp) 
@@ -32,10 +49,10 @@ if (isset($_POST['btnCreaProposta'])) {
     } else {
         echo "<h2>Errore nella creazione del collegio: " . mysqli_error($db_conn) . "</h2>";
     }
-    // Redirect per evitare duplicati
     header("Location: gestione_collegi.php");
     exit();
 }
+
 
 if (isset($_POST['btnElimina'])) {
     $id_collegio = mysqli_real_escape_string($db_conn, $_POST['id_collegio']);
@@ -93,6 +110,7 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
         body {
+            background: #007bff;
             background-image: url('images/admin.png');
             background-size: cover;
             background-position: center;
@@ -138,6 +156,35 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
             min-width: 50px;
             text-align: center;
         }
+        .center-container {
+            display: block;
+            width: 80%;
+            margin: 80px auto 0 auto;
+        }
+
+        .center-box {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            color: black;
+        }
+
+        @media (max-width: 768px) {
+            .center-container {
+                flex-direction: column;
+                align-items: center;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .center-box {
+                width: 100%;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -155,8 +202,10 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
       </div>
     </nav>
 
-    <div class="container">
-        <br>
+    <div class="center-container">
+    <!-- Form di creazione collegio -->
+    <div class="center-box">
+        <h2>Crea un nuovo collegio</h2>
         <form method="post" action="">
             <div class="form-group">
                 <label for="data_collegio">Data Collegio:</label>
@@ -176,89 +225,106 @@ $result_collegi = mysqli_query($db_conn, $query_collegi);
             </div>
             <button type="submit" class="btn btn-primary" name="btnCreaProposta">Crea collegio</button>
         </form>
-        <br><br><br>
+    </div>
 
-        <h2>Seleziona un collegio</h2>
-        <h3>Collegi:</h3>
+    <!-- Tabella collegi -->
+    <div class="center-box">
+    <h2>Collegi disponibili</h2>
+    <div class="table-responsive">
         <table class="table table-bordered">
             <tr>
                 <th>Descrizione</th>
                 <th>Data</th>
-                <th>Ora inizio</th>
-                <th>Ora fine</th>
-                <th>Seleziona</th>
-                <th>Modifica</th>
-                <th>Elimina</th>
-                <th>Visualizza OTP</th>
-                <th>Visualizza</th>
+                <th>Inizio</th>
+                <th>Fine</th>
+                <th colspan="5">Azioni</th>
             </tr>
             <?php
             if ($result_collegi && mysqli_num_rows($result_collegi) > 0) {
                 while ($row = mysqli_fetch_assoc($result_collegi)) {
             ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['descrizione'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($row['data_collegio'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($row['ora_inizio'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($row['ora_fine'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                        <td>
-                            <form method="post" action="">
-                                <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                <button type="submit" name="btnConferma" class="btn btn-link">
-                                    <img src="images/conferma.png" alt="Conferma">
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="post" action="modifica_collegio.php">
-                                <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                <button type="submit" name="btnModifica" class="btn btn-link">
-                                    <img src="images/penna_modifica.png" alt="Modifica">
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="post" action="">
-                                <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                <button type="submit" name="btnElimina" class="btn btn-link">
-                                    <img src="images/eliminazione.png" alt="Elimina" width="20px" height="20px">
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="post" action="otp_collegio.php">
-                                <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                <button type="submit" class="btn btn-link">
-                                    <img src="images/otp.png" alt="Visualizza OTP" width="20px" height="20px">
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="post" action="visualizza_partecipanti.php">
-                                <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
-                                <button type="submit" class="btn btn-link">
-                                    <img src="images/visualizza.png" alt="Visualizza" width="20px" height="20px">
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+            <tr>
+                <td><?= htmlspecialchars($row['descrizione']) ?></td>
+                <td><?= htmlspecialchars($row['data_collegio']) ?></td>
+                <td><?= htmlspecialchars($row['ora_inizio']) ?></td>
+                <td><?= htmlspecialchars($row['ora_fine']) ?></td>
+                <td>
+                    <form method="post" action="">
+                        <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
+                        <button type="submit" name="btnConferma" class="btn btn-link">
+                            <img src="images/conferma.png" alt="Conferma">
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="modifica_collegio.php">
+                        <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
+                        <button type="submit" name="btnModifica" class="btn btn-link">
+                            <img src="images/penna_modifica.png" alt="Modifica">
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="">
+                        <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
+                        <button type="submit" name="btnElimina" class="btn btn-link">
+                            <img src="images/eliminazione.png" alt="Elimina" width="20px" height="20px">
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="otp_collegio.php">
+                        <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
+                        <button type="submit" class="btn btn-link">
+                            <img src="images/otp.png" alt="Visualizza OTP" width="20px" height="20px">
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="visualizza_partecipanti.php">
+                        <input type="hidden" name="id_collegio" value="<?= htmlspecialchars($row['id_collegio']) ?>">
+                        <button type="submit" class="btn btn-link">
+                            <img src="images/visualizza.png" alt="Visualizza" width="20px" height="20px">
+                        </button>
+                    </form>
+                </td>
+            </tr>
             <?php
                 }
             } else {
-            ?>
-                <tr>
-                    <td colspan="9">Nessuna proposta trovata</td>
-                </tr>
-            <?php
+                echo "<tr><td colspan='9'>Nessun collegio trovato</td></tr>";
             }
             ?>
         </table>
     </div>
+</div>
 
-    <!-- Includi qui i tuoi script JS, se necessari -->
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-</body>
+    <script>
+        document.querySelector("form").addEventListener("submit", function(e) {
+            const data = document.getElementById("data_collegio").value;
+            const oraInizio = document.getElementById("ora_inizio").value;
+            const oraFine = document.getElementById("ora_fine").value;
+
+            const oggi = new Date().toISOString().split('T')[0];
+            const annoProssimo = new Date(new Date().getFullYear() + 1, 11, 31).toISOString().split('T')[0];
+
+            if (data < oggi || data > annoProssimo) {
+                alert("La data deve essere compresa tra oggi e il 31 dicembre dell’anno prossimo.");
+                e.preventDefault();
+                return;
+            }
+
+            if (oraInizio >= oraFine) {
+                alert("L'ora di inizio deve essere precedente all'ora di fine.");
+                e.preventDefault();
+            }
+        });
+    </script>
+
+    </body>
 </html>
 
 <?php
